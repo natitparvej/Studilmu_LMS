@@ -3,12 +3,12 @@ import Loadable from 'react-loadable'
 
 import DefaultLayout from './containers/DefaultLayout';
 import Login from './views/Pages/Login';
-import Cms from './views/Settings/Cms';
+//import Cms from './views/Settings/Cms';
 
 function Loading() {
   return <div>Loading...</div>;
 }
-//
+
 
 const Students = Loadable({
   loader: () => import('./views/user/Students'),
@@ -17,6 +17,11 @@ const Students = Loadable({
 
 const Owner = Loadable({
   loader: () => import('./views/user/Owner'),
+  loading: Loading,
+});
+
+const Userlist = Loadable({
+  loader: () => import('./views/user/Userlist'),
   loading: Loading,
 });
 
@@ -40,6 +45,16 @@ const Lecture = Loadable({
   loading: Loading,
 });
 
+const Coursecategory = Loadable({
+  loader: () => import('./views/Course/Coursecategory'),
+  loading: Loading,
+});
+
+// const Settings = Loadable({
+//   loader: () => import('./views/Settings/Settings'),
+//   loading: Loading,
+// });
+
 const Dashboard = Loadable({
   loader: () => import('./views/Dashboard'),
   loading: Loading,
@@ -51,16 +66,19 @@ const Dashboard = Loadable({
 const routes = [
   { path: '/', exact: true, name: 'Home', component: DefaultLayout },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/cms', name: 'Cms', component: Cms },
+  //{ path: '/cms', name: 'Cms', component: Cms },
 
-  { path: '/user', exact: true, name: 'User', component: Students },
+  { path: '/user', exact: true, name: 'User', component: Userlist },
   { path: '/user/students', name: 'Students', component: Students },
   { path: '/user/owner', name: 'Owner', component: Owner },
 
   { path: '/course', exact: true, name: 'Course', component: Course },
   { path: '/course/course', name: 'Add Course', component: Course },
+  { path: '/course/coursecategory', name: 'Course Category', component: Coursecategory },
   { path: '/course/courselist', name: 'Courses', component: Courselist },
   { path: '/course/lecture/:id', params: { id: '' }, name: 'Lectures', component: Lecture },
+
+  //{ path: '/settings', name: 'Account Settings', component: Settings },
 
   { path: '/charts', name: 'Charts', component: Charts },
 ];

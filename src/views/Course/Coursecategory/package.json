@@ -1,0 +1,6 @@
+{
+  "name": "Coursecategory",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Coursecategory.js"
+}

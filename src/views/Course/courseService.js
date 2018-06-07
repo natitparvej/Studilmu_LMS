@@ -1,7 +1,34 @@
 import apiService from '../Service/apiService.js';
 import axios from 'axios';
-const url = "http://localhost:3001";
+const url = "http://13.251.15.73:8080";
 
+	
+	function getCategory(data) {
+	    return axios.post(url+'/getCategory',data).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
+
+	function addCategory(data) {
+	    return axios.post(url+'/addCategory',data).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
+
+	function editCategory(data) {
+	    return axios.post(url+'/editCategory',data).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
 
 	function getAuthors(data) {
 	    return axios.post(url+'/getAuthors',data).then(response => {
@@ -67,5 +94,5 @@ const url = "http://localhost:3001";
 	}
 
 export default {
-    getAuthors,  addcourse, getCourses, addAuthors,getLectures, getLecturedetails, addLecture
+    getAuthors,  addcourse, getCourses, addAuthors,getLectures, getLecturedetails, addLecture , getCategory, addCategory, editCategory
 };

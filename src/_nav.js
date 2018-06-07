@@ -10,6 +10,13 @@ export default {
         //text: 'NEW',
       },
     },
+    
+    // {
+    //   name: 'Users',
+    //   url: '/user',
+    //   icon: 'icon-people',
+    // },
+
     {
       name: 'Users',
       url: '/buttons',
@@ -67,7 +74,11 @@ export default {
       ],
     },
     
-
+    {
+      name: 'Category',
+      url: '/course/coursecategory',
+      icon: 'icon-pie-chart',
+    },
 
 
     {
@@ -83,6 +94,54 @@ export default {
     },
 
 
+    {
+      name: 'Settings',
+      url: '/buttons',
+      icon: 'icon-equalizer',
+      children: [
+        {
+          name: 'Basic Settings',
+          url: '/sales/transactions',
+          //icon: 'icon-user',
+        },
+        {
+          name: 'Users',
+          url: '/sales/breakdown',
+          //icon: 'icon-user-follow',
+        },
+        {
+          name: 'Themes',
+          url: '/sales/upsells',
+          //icon: 'icon-user-follow',
+        },
+        {
+          name: 'Certifications',
+          url: '/sales/upsells',
+          //icon: 'icon-user-follow',
+        },
+        {
+          name: 'Gamification',
+          url: '/sales/upsells',
+          //icon: 'icon-user-follow',
+        },
+        {
+          name: 'E-commerce',
+          url: '/sales/upsells',
+          //icon: 'icon-user-follow',
+        },
+        {
+          name: 'Domain',
+          url: '/sales/upsells',
+          //icon: 'icon-user-follow',
+        },
+        {
+          name: 'Subscription',
+          url: '/sales/upsells',
+          //icon: 'icon-user-follow',
+        },
+      ],
+    },
+
 
     {
       name: 'Plan',
@@ -96,12 +155,12 @@ export default {
       icon: 'icon-map',
       
     },
-    {
-      name: 'Settings',
-      url: 'http://coreui.io/react/',
-      icon: 'icon-settings',
+    // {
+    //   name: 'Settings',
+    //   url: '/settings',
+    //   icon: 'icon-settings',
       
-    },
+    // },
 
     
   ],

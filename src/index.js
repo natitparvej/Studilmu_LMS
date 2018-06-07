@@ -10,7 +10,6 @@ import authService from './views/Service/authService.js';
 // disable ServiceWorker
 //import registerServiceWorker from './registerServiceWorker';
 if (!authService.getUser()) {
-	console.log('hi');
 	ReactDOM.render(<Login />, document.getElementById('root'));
 }else{
 	ReactDOM.render(<App />, document.getElementById('root'));

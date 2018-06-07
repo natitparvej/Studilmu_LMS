@@ -1,6 +1,6 @@
 
 import axios from 'axios';
-const url = "http://localhost:3001";
+const url = "http://13.251.15.73:8080";
 
 
 	function setUser(data) {

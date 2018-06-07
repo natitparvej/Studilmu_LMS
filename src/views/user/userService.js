@@ -1,6 +1,6 @@
 import apiService from '../Service/apiService.js';
 import axios from 'axios';
-const url = "http://localhost:3001";
+const url = "http://13.251.15.73:8080";
 
 
 	function getStudents(data) {
@@ -14,6 +14,15 @@ const url = "http://localhost:3001";
 
 	function getOwners(data) {
 	    return axios.post(url+'/getOwners',data).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
+
+	function getUser(data) {
+	    return axios.post(url+'/getUser',data).then(response => {
 	      return response.data;
 	    }).catch(error => {
 	    	return error;
@@ -48,6 +57,15 @@ const url = "http://localhost:3001";
 	    });
 	}
 
+	function addUser(data) {
+	    return axios.post(url+'/addUser',data).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
+
 export default {
-    getStudents, register, assignSchool, getOwners, assignSchoolowner
+    getStudents, register, assignSchool, getOwners, assignSchoolowner, getUser , addUser
 };
