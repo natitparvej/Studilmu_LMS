@@ -3,6 +3,7 @@ import { Nav, NavItem, NavLink, Progress, TabContent, TabPane, ListGroup, ListGr
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { AppSwitch } from '@coreui/react'
+//import authService from './../Service/authService.js';
 
 const propTypes = {
   children: PropTypes.node,
@@ -14,7 +15,7 @@ class DefaultAside extends Component {
 
   constructor(props) {
     super(props);
-
+    this.handleLogout = this.handleLogout.bind(this);
     this.toggle = this.toggle.bind(this);
     this.state = {
       activeTab: '1',
@@ -27,6 +28,11 @@ class DefaultAside extends Component {
         activeTab: tab,
       });
     }
+  }
+  handleLogout(tab) {
+    sessionStorage.removeItem('lms_login_user');
+    window.location.assign('#/login');
+    window.location.reload();
   }
 
   render() {
@@ -59,6 +65,14 @@ class DefaultAside extends Component {
                        this.toggle('3');
                      }}>
               <i className="icon-settings"></i>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink className={classNames({ active: this.state.activeTab === '3' })}
+                     onClick={() => {
+                       this.handleLogout();
+                     }}>
+              Logout
             </NavLink>
           </NavItem>
         </Nav>

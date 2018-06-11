@@ -1,31 +1,27 @@
 import React, { Component } from 'react';
 import { Button, Alert, Card, CardBody, CardHeader, Col, Row, Badge, Table, Modal, ModalBody, ModalFooter, ModalHeader,} from 'reactstrap';
-import { CardFooter, Container, Input, InputGroup, InputGroupAddon, InputGroupText,FormGroup, Form, Label } from 'reactstrap';
+import { CardFooter, Container, Input, InputGroup, InputGroupAddon, InputGroupText,Form, FormGroup, FormText, Label } from 'reactstrap';
 import authService from '../../Service/authService.js';
-import Service from './../userService.js';
+import Service from './../companyService.js';
 
-class Owner extends Component {
+class Companylist extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
-    this.state = {lognUser: lognUser ,fullname: '', usertype : 'C', parentid : 0, email: '', password : '', repassword : '', visible: false, msg : '', rows: []};
-    
+    this.state = {lognUser: lognUser ,firstname: '',lastname: '', usertype : 1,email: '', password : '', repassword : '',newpassword:'', visible: false, msg : '', rows: []};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.toggleSuccess = this.toggleSuccess.bind(this);
-    this.getowners = this.getowners.bind(this);
-    
     this.handleEditClick = this.handleEditClick.bind(this);
-    this.handleDeleteClick = this.handleDeleteClick.bind(this);
-
+    this.getowners = this.getowners.bind(this);
     this.getowners();
   }
 
   getowners(){
-    Service.getOwners({schoolid : this.state.lognUser.schoolid}).then(response => {
+    Service.getUser({schoolid : this.state.lognUser.schoolid}).then(response => {
       console.log(response);
       if(response.students){
-        this.setState({ rows: response.students, fullname: '', usertype : 'C',email: '', password : '', repassword : '' });
+        this.setState({ rows: response.students, firstname: '',lastname: '', usertype : 1,email: '', password : '', repassword : '' });
       }
     },err =>{
       console.log(err);
@@ -38,8 +34,8 @@ class Owner extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    if(!this.state.fullname){
-      this.showalert('Enter fullname'); return 1;
+    if(!this.state.firstname || !this.state.lastname){
+      this.showalert('Enter Firstname and Lastname'); return 1;
     }
     if(!this.state.email){
       this.showalert('Enter Email Address'); return 1;
@@ -54,8 +50,11 @@ class Owner extends Component {
       Service.register(this.state).then(response => {
         console.log(response);
         if(response.ack){
-          this.toggleSuccess();
-          this.getowners();
+          Service.assignSchoolowner({userid : response.userId, schoolid : this.state.lognUser.schoolid}).then(response => {
+            console.log(response);
+            this.toggleSuccess();
+            this.getowners();
+          });
         }else{
           this.showalert('Email Already Existed');
         }
@@ -74,33 +73,19 @@ class Owner extends Component {
   }
 
   handleEditClick(data){
-    console.log(this.state);
+    console.log(data);
     if(this.state.isEdittogged == true){
-      Service.updateUser(this.state).then(response => {
-        console.log(response);
-        if(response.ack){
-          this.getowners();
-          this.setState({isEdittogged: false, fullname: '', id : '',
-                        usertype : 'C', email: '', isactive : '',
-                        exispassword : '', bio: '' });
-        }
-      });
-
+      console.log(this.state);
+      // Service.editCategory(this.state).then(response => {
+      //   console.log(response);
+      //   if(response.ack){
+      //     this.category();
+          this.setState({isEdittogged: false, categoryname: '',categoryprice: '', categoryid : '' });
+      //   }
+      // });
     }else{
-      this.setState({isEdittogged: true,fullname: data.name, id : data.id,
-                    usertype : data.user_type,email: data.email, isactive : data.is_active,
-                    exispassword : data.password, bio: data.userbio });
+      this.setState({isEdittogged: true,firstname: data.firstname,lastname: data.lastname, usertype : data.usertype,email: data.email, exispassword : data.password, bio: data.userbio });
     }
-  }
-
-  handleDeleteClick(id){
-    console.log(id);
-    Service.deleteUser({userid : id}).then(response => {
-      console.log(response);
-      if(response.ack){
-        this.getowners();
-      }
-    });
   }
 
   render() {
@@ -116,10 +101,19 @@ class Owner extends Component {
 
             <FormGroup row>
               <Col md="3">
-                <Label htmlFor="text-input">Full Name</Label>
+                <Label htmlFor="text-input">First Name</Label>
               </Col>
               <Col xs="12" md="9">
-                <Input type="text" name="fullname" value={this.state.fullname} onChange={this.handleChange} id="text-input" placeholder="e.g. 'User Full Name'" />
+                <Input type="text" name="firstname" value={this.state.firstname} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Last Name</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="lastname" value={this.state.lastname} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />
               </Col>
             </FormGroup>
 
@@ -128,7 +122,7 @@ class Owner extends Component {
                 <Label htmlFor="text-input">Email Address</Label>
               </Col>
               <Col xs="12" md="9">
-                <Input type="text" name="email" value={this.state.email} onChange={this.handleChange} id="text-input" placeholder="e.g. 'User Email Address'" />
+                <Input type="text" name="email" value={this.state.email} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />
               </Col>
             </FormGroup>
 
@@ -148,27 +142,22 @@ class Owner extends Component {
               <Col xs="12" md="9">
                 <Input type="select" id="usertype" name="usertype" onChange={this.handleChange} value={this.state.usertype}>
                   <option value='' disabled>Please Select</option>
-                  <option value='C'>Owner</option>
-                  <option value='I'>Instructor</option>
-                  <option value='S'>Student</option>
+                  <option value='1'>Admin</option>
+                  <option value='2'>Instructor</option>
+                  <option value='3'>Student</option>
                 </Input>
               </Col>
             </FormGroup>
 
             <FormGroup row>
               <Col md="3">
-                <Label htmlFor="select">Status</Label>
+                <Label htmlFor="text-input">Bio</Label>
               </Col>
               <Col xs="12" md="9">
-                <Input type="select" id="isactive" name="isactive" onChange={this.handleChange} value={this.state.isactive}>
-                  <option value='' disabled>Please Select</option>
-                  <option value='1'>Active</option>
-                  <option value='0'>Inactive</option>
-                </Input>
+                <Input type="textarea" name="categoryprice" value={this.state.categoryprice} onChange={this.handleChange} id="text-input" rows="9" placeholder="e.g. 'Everything you need to know about video editing'" />
+                
               </Col>
             </FormGroup>
-
-          
 
           </Form>
 
@@ -177,14 +166,14 @@ class Owner extends Component {
           <Button type="submit" size="sm" color="primary" onClick={this.handleEditClick}><i className="fa fa-dot-circle-o"></i> Update</Button>
         </CardFooter>
       </Card>
-    ):(
+    ) : (
       <Row>
           <Col xs="12" md="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Owners</strong>
+                <i className="fa fa-align-justify"></i><strong>Company</strong>
                 <div className="card-header-actions">
-                  <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Owners</button>
+                  <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add User</button>
                 </div>
               </CardHeader>
               <CardBody>
@@ -194,30 +183,45 @@ class Owner extends Component {
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Last Login</th>
+                    
+                    
                     <th>Join Date</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
                   </thead>
                   <tbody>
+
+                  <tr>
+                    <td>Company Name</td>
+                     <td>companymail@mail.com</td>
+                    <td>10/10/2012</td>
+                    <td>
+                     <Badge color="success">Active</Badge>
+                    </td>
+                    <td>
+                      <Button color="primary" size="sm" onClick={() => this.handleEditClick()}><i className="fa fa-pencil"></i></Button>
+                      <Button color="danger" size="sm"><i className="fa fa-trash-o"></i></Button>
+                    </td>
+                  </tr>
+
+
+
                   {this.state.rows.map((row, i) =>
                   <tr key={i}>
-                    <td>{row.name}</td>
-                    <td>{row.email}</td>
-                    <td>{row.joindate}</td>
+                    <td>{row.firstname +' '+ row.lastname}</td>
+                   
                     <td>{row.joindate}</td>
                     <td>
-                    {this.state.rows[i].is_active == 1 ? (
+                    {this.state.rows[i].status == 1 ? (
                       <Badge color="success">Active</Badge>
                     ):(
                       <Badge color="danger">Inactive</Badge>
                     )}
-                      
                     </td>
                     <td>
                       <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
-                      <Button color="danger" size="sm" onClick={() => this.handleDeleteClick(row.id)}><i className="fa fa-trash-o"></i></Button>
+                      <Button color="danger" size="sm"><i className="fa fa-trash-o"></i></Button>
                     </td>
                   </tr>
                   )}
@@ -226,7 +230,7 @@ class Owner extends Component {
                 <Modal isOpen={this.state.success} toggle={this.toggleSuccess}
                        className={'modal-success ' + this.props.className}>
                   
-                  <ModalHeader toggle={this.toggleSuccess}>Add Owners</ModalHeader>
+                  <ModalHeader toggle={this.toggleSuccess}>Add User</ModalHeader>
                   <form onSubmit={this.handleSubmit}>
                       <ModalBody>
 
@@ -241,7 +245,16 @@ class Owner extends Component {
                                 <i className="icon-user"></i>
                               </InputGroupText>
                             </InputGroupAddon>
-                            <Input type="text" placeholder="First Name" name="fullname" value={this.state.fullname} onChange={this.handleChange}/>
+                            <Input type="text" placeholder="Firstname" name="firstname" value={this.state.firstname} onChange={this.handleChange}/>
+                          </InputGroup>
+
+                          <InputGroup className="mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="icon-user"></i>
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <Input type="text" placeholder="Lastname" name="lastname" value={this.state.lastname} onChange={this.handleChange}/>
                           </InputGroup>
 
                           <InputGroup className="mb-3">
@@ -283,14 +296,14 @@ class Owner extends Component {
           </Col>
           
         </Row>
-    )
+    );
+
     return (
       <div className="animated fadeIn">
-        {userlistdiv}
-        
+      {userlistdiv}
       </div>
     );
   }
 }
 
-export default Owner;
+export default Companylist;

@@ -20,6 +20,11 @@ const Owner = Loadable({
   loading: Loading,
 });
 
+const Instructor = Loadable({
+  loader: () => import('./views/user/Instructor'),
+  loading: Loading,
+});
+
 const Userlist = Loadable({
   loader: () => import('./views/user/Userlist'),
   loading: Loading,
@@ -60,6 +65,11 @@ const Dashboard = Loadable({
   loading: Loading,
 });
 
+const Companylist = Loadable({
+  loader: () => import('./views/Company/Companylist'),
+  loading: Loading,
+});
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -71,6 +81,9 @@ const routes = [
   { path: '/user', exact: true, name: 'User', component: Userlist },
   { path: '/user/students', name: 'Students', component: Students },
   { path: '/user/owner', name: 'Owner', component: Owner },
+  { path: '/user/instructor', name: 'Instructor', component: Instructor },
+
+  { path: '/company', exact: true, name: 'User', component: Companylist },
 
   { path: '/course', exact: true, name: 'Course', component: Course },
   { path: '/course/course', name: 'Add Course', component: Course },

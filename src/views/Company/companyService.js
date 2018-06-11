@@ -4,17 +4,7 @@ const url = "http://13.251.15.73:8080";
 
 
 	function getStudents(data) {
-		console.log(data);
-	    return axios.post(url+'/getStudents', {usertype : "S"}).then(response => {
-	      return response.data;
-	    }).catch(error => {
-	    	return error;
-	      console.log(error);
-	    });
-	}
-
-	function getInstructor(data) {
-	    return axios.post(url+'/getInstructor',{usertype : "I"}).then(response => {
+	    return axios.post(url+'/getStudents',data).then(response => {
 	      return response.data;
 	    }).catch(error => {
 	    	return error;
@@ -23,25 +13,7 @@ const url = "http://13.251.15.73:8080";
 	}
 
 	function getOwners(data) {
-	    return axios.post(url+'/getOwners',{usertype : "C"}).then(response => {
-	      return response.data;
-	    }).catch(error => {
-	    	return error;
-	      console.log(error);
-	    });
-	}
-
-	function filterUser(data) {
-	    return axios.post(url+'/filterUser',data).then(response => {
-	      return response.data;
-	    }).catch(error => {
-	    	return error;
-	      console.log(error);
-	    });
-	}
-
-	function filterStudent(data) {
-	    return axios.post(url+'/filterStudent',data).then(response => {
+	    return axios.post(url+'/getOwners',data).then(response => {
 	      return response.data;
 	    }).catch(error => {
 	    	return error;
@@ -94,25 +66,6 @@ const url = "http://13.251.15.73:8080";
 	    });
 	}
 
-	function updateUser(data) {
-	    return axios.post(url+'/updateUser',data).then(response => {
-	      return response.data;
-	    }).catch(error => {
-	    	return error;
-	      console.log(error);
-	    });
-	}
-
-	function deleteUser(data) {
-	    return axios.post(url+'/deleteUser',data).then(response => {
-	      return response.data;
-	    }).catch(error => {
-	    	return error;
-	      console.log(error);
-	    });
-	}
-
 export default {
-    getStudents, register, assignSchool, getOwners, assignSchoolowner, getUser , addUser, getInstructor, filterUser, updateUser, deleteUser,
-    filterStudent
+    getStudents, register, assignSchool, getOwners, assignSchoolowner, getUser , addUser
 };
