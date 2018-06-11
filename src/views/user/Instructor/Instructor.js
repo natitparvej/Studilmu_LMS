@@ -1,31 +1,41 @@
 import React, { Component } from 'react';
 import { Button, Alert, Card, CardBody, CardHeader, Col, Row, Badge, Table, Modal, ModalBody, ModalFooter, ModalHeader,} from 'reactstrap';
-import { CardFooter, Container, Input, InputGroup, InputGroupAddon, InputGroupText,FormGroup, Form, Label } from 'reactstrap';
+import { CardFooter, Container, Input, InputGroup, InputGroupAddon, InputGroupText, FormGroup, Form, Label } from 'reactstrap';
 import authService from '../../Service/authService.js';
 import Service from './../userService.js';
 
-class Owner extends Component {
+class Instructor extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
-    this.state = {lognUser: lognUser ,fullname: '', usertype : 'C', parentid : 0, email: '', password : '', repassword : '', visible: false, msg : '', rows: []};
-    
+    this.state = {lognUser: lognUser ,fullname: '', usertype : 'I',email: '', parentid : '', isactive : '',
+                  password : '', repassword : '',
+                  ownerrows : [], visible: false, msg : '', rows: []
+                };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.toggleSuccess = this.toggleSuccess.bind(this);
-    this.getowners = this.getowners.bind(this);
-    
+    this.getinstructor = this.getinstructor.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    this.handleownerChange = this.handleownerChange.bind(this);
+    this.getinstructor();
 
-    this.getowners();
-  }
-
-  getowners(){
-    Service.getOwners({schoolid : this.state.lognUser.schoolid}).then(response => {
+    Service.getOwners().then(response => {
       console.log(response);
       if(response.students){
-        this.setState({ rows: response.students, fullname: '', usertype : 'C',email: '', password : '', repassword : '' });
+        this.setState({ ownerrows: response.students });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+
+  getinstructor(){
+    Service.getInstructor({schoolid : this.state.lognUser.schoolid}).then(response => {
+      console.log(response);
+      if(response.students){
+        this.setState({ rows: response.students, fullname: '', usertype : 'I',email: '', password : '', repassword : '' });
       }
     },err =>{
       console.log(err);
@@ -39,7 +49,7 @@ class Owner extends Component {
   handleSubmit(event) {
     event.preventDefault();
     if(!this.state.fullname){
-      this.showalert('Enter fullname'); return 1;
+      this.showalert('Enter Fullname'); return 1;
     }
     if(!this.state.email){
       this.showalert('Enter Email Address'); return 1;
@@ -55,7 +65,7 @@ class Owner extends Component {
         console.log(response);
         if(response.ack){
           this.toggleSuccess();
-          this.getowners();
+          this.getinstructor();
         }else{
           this.showalert('Email Already Existed');
         }
@@ -73,15 +83,29 @@ class Owner extends Component {
     this.setState({ success: !this.state.success,});
   }
 
+  filteruser(ownerid){
+    console.log(ownerid);
+    Service.filterUser({ ownerid : ownerid, usertype : "I" }).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.setState({ rows: response.students });
+      }else{
+        this.setState({ rows: [] });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+
   handleEditClick(data){
     console.log(this.state);
     if(this.state.isEdittogged == true){
       Service.updateUser(this.state).then(response => {
         console.log(response);
         if(response.ack){
-          this.getowners();
+          this.getinstructor();
           this.setState({isEdittogged: false, fullname: '', id : '',
-                        usertype : 'C', email: '', isactive : '',
+                        usertype : '', email: '', isactive : '',
                         exispassword : '', bio: '' });
         }
       });
@@ -93,12 +117,21 @@ class Owner extends Component {
     }
   }
 
+  handleownerChange(event){
+    this.setState({ [event.target.name]: event.target.value });
+    if(event.target.value){
+      this.filteruser( event.target.value );
+    }else{
+      this.getinstructor();
+    }
+  }
+
   handleDeleteClick(id){
     console.log(id);
     Service.deleteUser({userid : id}).then(response => {
       console.log(response);
       if(response.ack){
-        this.getowners();
+        this.getinstructor();
       }
     });
   }
@@ -182,10 +215,28 @@ class Owner extends Component {
           <Col xs="12" md="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Owners</strong>
-                <div className="card-header-actions">
-                  <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Owners</button>
-                </div>
+                
+
+                <FormGroup row>
+                <Col md="2">
+                  <i className="fa fa-align-justify"></i><strong>  Instructor</strong>
+                </Col>
+                <Col xs="12" md="8">
+                  <Input type="select" name="ownerid" onChange={this.handleownerChange} value={this.state.ownerid}>
+                    <option value='' >Select Owner</option>
+                    {this.state.ownerrows.map((row, i) =>
+                    <option value={row.id} key={i}>{row.name}</option>
+                    )}
+                  </Input>
+                </Col>
+                <Col xs="12" md="2">
+                  <div className="card-header-actions">
+                    <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Instructor</button>
+                  </div>
+                </Col>
+                </FormGroup>
+
+
               </CardHeader>
               <CardBody>
 
@@ -213,7 +264,6 @@ class Owner extends Component {
                     ):(
                       <Badge color="danger">Inactive</Badge>
                     )}
-                      
                     </td>
                     <td>
                       <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
@@ -226,7 +276,7 @@ class Owner extends Component {
                 <Modal isOpen={this.state.success} toggle={this.toggleSuccess}
                        className={'modal-success ' + this.props.className}>
                   
-                  <ModalHeader toggle={this.toggleSuccess}>Add Owners</ModalHeader>
+                  <ModalHeader toggle={this.toggleSuccess}>Add Instructor</ModalHeader>
                   <form onSubmit={this.handleSubmit}>
                       <ModalBody>
 
@@ -236,12 +286,21 @@ class Owner extends Component {
                           <p className="text-muted">If no password is given, user will receive an email to confirm their account and set a password.</p>
 
                           <InputGroup className="mb-3">
+                            <Input type="select" name="parentid" onChange={this.handleChange} value={this.state.parentid}>
+                              <option value='' >Please Select Owner</option>
+                              {this.state.ownerrows.map((row, i) =>
+                              <option value={row.id} key={i}>{row.name}</option>
+                              )}
+                            </Input>
+                          </InputGroup>
+
+                          <InputGroup className="mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
                                 <i className="icon-user"></i>
                               </InputGroupText>
                             </InputGroupAddon>
-                            <Input type="text" placeholder="First Name" name="fullname" value={this.state.fullname} onChange={this.handleChange}/>
+                            <Input type="text" placeholder="Full Name" name="fullname" value={this.state.fullname} onChange={this.handleChange}/>
                           </InputGroup>
 
                           <InputGroup className="mb-3">
@@ -287,10 +346,9 @@ class Owner extends Component {
     return (
       <div className="animated fadeIn">
         {userlistdiv}
-        
       </div>
     );
   }
 }
 
-export default Owner;
+export default Instructor;

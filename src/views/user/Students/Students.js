@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Button, Alert, Card, CardBody, CardHeader, Col, Row, Badge, Table, Modal, ModalBody, ModalFooter, ModalHeader,} from 'reactstrap';
-import { CardFooter, Container, Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { CardFooter, Container, Input, InputGroup, InputGroupAddon, InputGroupText, FormGroup, Form, Label } from 'reactstrap';
 import authService from '../../Service/authService.js';
 import Service from './../userService.js';
 
@@ -9,21 +9,103 @@ class Students extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
-    this.state = {lognUser: lognUser , firstname: '',lastname: '', usertype : 3,email: '', password : '', repassword : '', visible: false, msg : '', rows: []};
+    this.state = {lognUser: lognUser , fullname: '', usertype : 'S',email: '', parentid : '', subparentid : '', isactive : '',
+                  password : '', repassword : '', ownerid : '', instructorid : '', ownerrows : [], instructorows : [],
+                  visible: false, msg : '', rows: []};
+
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.toggleSuccess = this.toggleSuccess.bind(this);
+    this.handleownerChange = this.handleownerChange.bind(this);
+    this.handleinstrotrChange = this.handleinstrotrChange.bind(this);
+    this.filteruser = this.filteruser.bind(this);
     this.getstudent = this.getstudent.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
     this.getstudent();
-  }
 
-  getstudent(){
-    Service.getStudents({schoolid : this.state.lognUser.schoolid}).then(response => {
-      //console.log(response);
-      this.setState({ rows: response.students, firstname: '',lastname: '', usertype : 3,email: '', password : '', repassword : '' });
+    Service.getOwners().then(response => {
+      console.log(response);
+      if(response.students){
+        this.setState({ ownerrows: response.students });
+      }
     },err =>{
       console.log(err);
     });
+
+  }
+
+  getstudent(){
+    Service.getStudents({schoolid : this.state.lognUser.schoolid, usertype : "S" }).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.setState({ rows: response.students, fullname: '', usertype : 3,email: '', password : '', repassword : '' });
+      }else{
+        this.setState({ rows: [] });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+
+  filteruser(ownerid){
+    Service.filterUser({ ownerid : ownerid, usertype : "S" }).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.setState({ rows: response.students });
+      }else{
+        this.setState({ rows: [] });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+
+  filterinstructor(ownerid){
+    Service.filterUser({ ownerid : ownerid, usertype : "I" }).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.setState({ instructorows: response.students });
+      }else{
+        this.setState({ instructorows: [] });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+  
+  filterStudent(instructurid){
+    Service.filterStudent({ instructurid : instructurid, usertype : "S" }).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.setState({ rows: response.students });
+      }else{
+        this.setState({ rows: [] });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+
+  handleownerChange(event){
+    this.setState({ [event.target.name]: event.target.value });
+    if(event.target.value){
+      this.filteruser( event.target.value );
+      this.filterinstructor( event.target.value );
+    }else{
+      this.getstudent();
+    }
+  }
+
+  handleinstrotrChange(event){
+    console.log(event.target.value);
+    this.setState({ [event.target.name]: event.target.value });
+    if(event.target.value){
+      this.filterStudent( event.target.value );
+    }else{
+      this.getstudent();
+    }
   }
 
   handleChange(event) {
@@ -32,8 +114,8 @@ class Students extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    if(!this.state.firstname || !this.state.lastname){
-      this.showalert('Enter Firstname and Lastname'); return 1;
+    if(!this.state.fullname){
+      this.showalert('Enter Fullname'); return 1;
     }
     if(!this.state.email){
       this.showalert('Enter Email Address'); return 1;
@@ -48,11 +130,8 @@ class Students extends Component {
       Service.register(this.state).then(response => {
         console.log(response);
         if(response.ack){
-          Service.assignSchool({studentid : response.userId, schoolid : this.state.lognUser.schoolid}).then(response => {
-            console.log(response);
-            this.toggleSuccess();
-            this.getstudent();
-          });
+          this.toggleSuccess();
+          this.getstudent();
         }else{
           this.showalert('Email Already Existed');
         }
@@ -70,17 +149,147 @@ class Students extends Component {
     this.setState({ success: !this.state.success,});
   }
 
+  handleEditClick(data){
+    console.log(this.state);
+    if(this.state.isEdittogged == true){
+      Service.updateUser(this.state).then(response => {
+        console.log(response);
+        if(response.ack){
+          this.getstudent();
+          this.setState({isEdittogged: false, fullname: '', id : '',
+                        usertype : '', email: '', isactive : '',
+                        exispassword : '', bio: '' });
+        }
+      });
+
+    }else{
+      this.setState({isEdittogged: true,fullname: data.name, id : data.id,
+                    usertype : data.user_type,email: data.email, isactive : data.is_active,
+                    exispassword : data.password, bio: data.userbio });
+    }
+  }
+
+  handleDeleteClick(id){
+    console.log(id);
+    Service.deleteUser({userid : id}).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.getstudent();
+      }
+    });
+  }
+
+
   render() {
-    return (
-      <div className="animated fadeIn">
-        <Row>
+
+    const userlistdiv = this.state.isEdittogged ? (
+      <Card>
+        <CardHeader>
+          <strong>Edit Category</strong>
+        </CardHeader>
+        <CardBody>
+
+          <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Full Name</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="fullname" value={this.state.fullname} onChange={this.handleChange} id="text-input" placeholder="e.g. 'User Full Name'" />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Email Address</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="email" value={this.state.email} onChange={this.handleChange} id="text-input" placeholder="e.g. 'User Email Address'" />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Password</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="newpassword" value={this.state.newpassword} onChange={this.handleChange} id="text-input" placeholder="Blank to leave unchanged" />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="select">User Role</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="select" id="usertype" name="usertype" onChange={this.handleChange} value={this.state.usertype}>
+                  <option value='' disabled>Please Select</option>
+                  <option value='C'>Owner</option>
+                  <option value='I'>Instructor</option>
+                  <option value='S'>Student</option>
+                </Input>
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="select">Status</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="select" id="isactive" name="isactive" onChange={this.handleChange} value={this.state.isactive}>
+                  <option value='' disabled>Please Select</option>
+                  <option value='1'>Active</option>
+                  <option value='0'>Inactive</option>
+                </Input>
+              </Col>
+            </FormGroup>
+
+          
+
+          </Form>
+
+        </CardBody>
+        <CardFooter>
+          <Button type="submit" size="sm" color="primary" onClick={this.handleEditClick}><i className="fa fa-dot-circle-o"></i> Update</Button>
+        </CardFooter>
+      </Card>
+    ):(
+      <Row>
           <Col xs="12" md="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Students</strong>
-                <div className="card-header-actions">
+
+                <FormGroup row>
+                <Col md="2">
+                  <i className="fa fa-align-justify"></i><strong>  Students</strong>
+                </Col>
+                
+                <Col xs="12" md="4">
+                  <Input type="select" name="ownerid" onChange={this.handleownerChange} value={this.state.ownerid}>
+                    <option value='' >Select Owner</option>
+                    {this.state.ownerrows.map((row, i) =>
+                    <option value={row.id} key={i}>{row.name}</option>
+                    )}
+                  </Input>
+                </Col>
+
+                <Col xs="12" md="4">
+                  <Input type="select" name="instructorid" onChange={this.handleinstrotrChange} value={this.state.instructorid}>
+                    <option value='' >Select Instructor</option>
+                    {this.state.instructorows .map((row, i) =>
+                    <option value={row.id} key={i}>{row.name}</option>
+                    )}
+                  </Input>
+                </Col>
+
+                <Col xs="12" md="2">
+                  <div className="card-header-actions">
                     <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Students</button>
-                </div>
+                  </div>
+                </Col>
+                </FormGroup>
+
               </CardHeader>
               <CardBody>
 
@@ -91,23 +300,30 @@ class Students extends Component {
                     <th>Email</th>
                     <th>Last Login</th>
                     <th>Join Date</th>
-                    <th>Purchases</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                   </thead>
                   <tbody>
 
                   {this.state.rows.map((row, i) =>
                   <tr key={i}>
-                    <td>{row.firstname +' '+ row.lastname}</td>
+                    <td>{row.name}</td>
                     <td>{row.email}</td>
                     <td>{row.joindate}</td>
-                    <td>{row.joindate}</td>
-                    <td>$ {row.price}</td>
-                    
-                      <td>
-                        <Badge color="success">Active</Badge>
-                      </td>
+                    <td>{(row.join)}</td>
+                    <td>
+                    {this.state.rows[i].is_active == 1 ? (
+                      <Badge color="success">Active</Badge>
+                    ):(
+                      <Badge color="danger">Inactive</Badge>
+                    )}
+                    </td>
+
+                    <td>
+                      <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
+                      <Button color="danger" size="sm" onClick={() => this.handleDeleteClick(row.id)}><i className="fa fa-trash-o"></i></Button>
+                    </td>
                     
                   </tr>
 
@@ -128,21 +344,30 @@ class Students extends Component {
                           <p className="text-muted">If no password is given, students will receive an email to confirm their account and set a password.</p>
 
                           <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="icon-user"></i>
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Firstname" name="firstname" value={this.state.firstname} onChange={this.handleChange}/>
+                            <Input type="select" name="parentid" onChange={this.handleownerChange} value={this.state.parentid}>
+                              <option value='' >Please Select Owner</option>
+                              {this.state.ownerrows.map((row, i) =>
+                              <option value={row.id} key={i}>{row.name}</option>
+                              )}
+                            </Input>
                           </InputGroup>
 
+                          <InputGroup className="mb-3">
+                            <Input type="select" name="subparentid" onChange={this.handleChange} value={this.state.subparentid}>
+                              <option value='' >Please Select Instructor</option>
+                              {this.state.instructorows.map((row, i) =>
+                              <option value={row.id} key={i}>{row.name}</option>
+                              )}
+                            </Input>
+                          </InputGroup>
+                          
                           <InputGroup className="mb-3">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
                                 <i className="icon-user"></i>
                               </InputGroupText>
                             </InputGroupAddon>
-                            <Input type="text" placeholder="Lastname" name="lastname" value={this.state.lastname} onChange={this.handleChange}/>
+                            <Input type="text" placeholder="Full Name" name="fullname" value={this.state.fullname} onChange={this.handleChange}/>
                           </InputGroup>
 
                           <InputGroup className="mb-3">
@@ -169,6 +394,7 @@ class Students extends Component {
                             </InputGroupAddon>
                             <Input type="password" placeholder="Repeat password (optional)" name="repassword" value={this.state.repassword} onChange={this.handleChange}/>
                           </InputGroup>
+
                       
                       </ModalBody>
                       <ModalFooter>
@@ -184,7 +410,10 @@ class Students extends Component {
           </Col>
           
         </Row>
-        
+    )
+    return (
+      <div className="animated fadeIn">
+        {userlistdiv}
       </div>
     );
   }
