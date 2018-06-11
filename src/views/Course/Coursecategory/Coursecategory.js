@@ -8,7 +8,7 @@ import { Button, Card, CardHeader, Form, FormGroup, FormText, Label, CardBody, C
 import classnames from 'classnames';
 import authService from '../../Service/authService.js';
 import Service from './../courseService.js';
-
+//test Santanu
 class Coursecategory extends Component {
   constructor(props) {
     super(props);
