@@ -55,10 +55,12 @@ const Coursecategory = Loadable({
   loading: Loading,
 });
 
-// const Settings = Loadable({
-//   loader: () => import('./views/Settings/Settings'),
-//   loading: Loading,
-// });
+ const Sitesetting = Loadable({
+   loader: () => import('./views/Settings/Sitesetting'),
+   loading: Loading,
+ });
+
+
 
 const Dashboard = Loadable({
   loader: () => import('./views/Dashboard'),
@@ -90,6 +92,7 @@ const routes = [
   { path: '/course/coursecategory', name: 'Course Category', component: Coursecategory },
   { path: '/course/courselist', name: 'Courses', component: Courselist },
   { path: '/course/lecture/:id', params: { id: '' }, name: 'Lectures', component: Lecture },
+  { path: '/settings/sitesetting', exact: true, name: 'Site Setting', component: Sitesetting },
 
   //{ path: '/settings', name: 'Account Settings', component: Settings },
 

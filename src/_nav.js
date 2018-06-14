@@ -103,11 +103,23 @@ export default {
     },
 
 
-    // {
-    //   name: 'Category',
-    //   url: '/course/coursecategory',
-    //   icon: 'icon-pie-chart',
-    // },
+    {
+      name: 'Setting',
+      url: '/buttons',
+      icon: 'icon-list',
+      children: [
+        {
+          name: 'Site Setting',
+          url: '/settings/sitesetting',
+          // icon: 'icon-user-follow',
+        },
+        {
+          name: 'Subscription Package',
+          url: '/settings/package',
+          // icon: 'icon-user',
+        },        
+      ],
+    },
 
 
     // {
