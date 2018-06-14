@@ -4,6 +4,7 @@ const url = "http://13.251.15.73:8080";
 
 	
 	function getCategory(data) {
+			
 	    return axios.post(url+'/getCategory',data).then(response => {
 	      return response.data;
 	    }).catch(error => {
@@ -12,7 +13,7 @@ const url = "http://13.251.15.73:8080";
 	    });
 	}
 
-	function addCategory(data) {
+	function addCategory(data) {		
 	    return axios.post(url+'/addCategory',data).then(response => {
 	      return response.data;
 	    }).catch(error => {
@@ -28,6 +29,24 @@ const url = "http://13.251.15.73:8080";
 	    	return error;
 	      console.log(error);
 	    });
+	}
+
+	function getOwners(data) {
+		return axios.post(url+'/getOwners',{usertype : "C"}).then(response => {
+			return response.data;
+		}).catch(error => {
+			return error;
+			console.log(error);
+		});
+}
+
+function getCategory(data) {
+		return axios.post(url+'/getCategory').then(response => {
+			return response.data;
+		}).catch(error => {
+			return error;
+			console.log(error);
+		});
 	}
 
 	function getAuthors(data) {
@@ -56,6 +75,15 @@ const url = "http://13.251.15.73:8080";
 	      console.log(error);
 	    });
 	}
+
+	function editcourse(data) {
+		return axios.post(url+'/editcourse',data).then(response => {
+			return response.data;
+		}).catch(error => {
+			return error;
+			console.log(error);
+		});
+}
 
 	function addLecture(data) {
 	    return axios.post(url+'/addLecture',data).then(response => {
@@ -94,5 +122,5 @@ const url = "http://13.251.15.73:8080";
 	}
 
 export default {
-    getAuthors,  addcourse, getCourses, addAuthors,getLectures, getLecturedetails, addLecture , getCategory, addCategory, editCategory
+    getAuthors,  addcourse, getCourses, addAuthors,getLectures, getLecturedetails, addLecture , getCategory, getOwners, addCategory, editCategory, editcourse
 };

@@ -13,7 +13,7 @@ class Courselist extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
-    this.state = {lognUser: lognUser ,schoolid : lognUser.schoolid ,lecturerow : [], isLoggedIn: true,authors : [],courserow : [],activeTab: '1', lecturename : '', lecturedesc : '',lecturesectionid: '',
+    this.state = {lognUser: lognUser ,schoolid : lognUser.schoolid ,lecturerow : [], isLoggedIn: true,authors : [],courserow : [],ownerrows : [], categories : [], activeTab: '1', lecturename : '', lecturedesc : '',lecturesectionid: '',
                   corseid: '',corsename: '',corsesubtitle: '', corsedesc : '', corsebioid: '', visible: false, msg : '', rows: [],
                   fullname : '', headline : '' ,bio : ''};
 
@@ -26,6 +26,7 @@ class Courselist extends Component {
     this.handleLecture = this.handleLecture.bind(this);
     this.toggleSuccess = this.toggleSuccess.bind(this);
     this.toggleLecture = this.toggleLecture.bind(this);
+    this.handleEditClick = this.handleEditClick.bind(this);
     
 
     this.toggle = this.toggle.bind(this);
@@ -33,12 +34,31 @@ class Courselist extends Component {
     this.courses = this.courses.bind(this);
     this.authors();
     this.courses();
+
+    Service.getOwners().then(response => {
+      console.log(response);
+      if(response.students){
+        this.setState({ ownerrows: response.students });        
+      }
+    },err =>{
+      console.log(err);
+    });
+
+    Service.getCategory().then(response => {
+      
+      if(response.category){
+        this.setState({ categories: response.category });
+              
+      }
+    },err =>{
+      console.log(err);
+    });
   }
 
   courses(){
-    Service.getCourses({schoolid:this.state.lognUser.schoolid}).then(response => {
-        console.log(response);
-        if(response.ack){
+    Service.getCourses({schoolid:this.state.lognUser.schoolid}).then(response => {       
+        if(response.ack == 1){
+          console.log(response.course);
           this.setState({ courserow : response.course});
         }
     });
@@ -152,6 +172,20 @@ class Courselist extends Component {
     }
   }
 
+  handleEditClick(data){
+    if(this.state.isEdittogged == true){
+      Service.editcourse(this.state).then(response => {
+        console.log(response);
+        if(response.ack == 1){
+          this.courses();
+          this.setState({isEdittogged: false, name: '', id : '' });
+        }
+      });
+    }else{
+      this.setState({isEdittogged: true, name: data.name, id : data.id, description: data.description, category_id: data.category_id, user_id: data.user_id, code: data.code, price: data.price, time_limit: data.time_limit, certification:data.certification });
+    }
+  }
+
   handleLoginClick(data){
     console.log(data);
     if(this.state.isLoggedIn == true){
@@ -162,257 +196,189 @@ class Courselist extends Component {
   }
 
 
-  render() {
-    const button = this.state.isLoggedIn ? (
-      <input type="submit" onClick={this.handleLoginClick} value="Details"/>
-    ) : (
-      <input type="submit" onClick={this.handleLoginClick} value="All Course"/>
-    );
-
-    const coursediv = this.state.isLoggedIn ? (
-      <Row>
-          {this.state.courserow.map((row, i) =>
-            <Col xs="12" sm="6" md="4" key={i} onClick={() => this.handleLoginClick(row)}>
-              <Card>
-                <CardHeader>
-                  {row.coursename}
-                  <Badge color="success" className="float-right">Success</Badge>
-                </CardHeader>
-                <CardBody>
-                  {row.description}
-                </CardBody>
-              </Card>
-            </Col>
-          )}
-        </Row>
-    ) : (
+  render() {   
+      
+    const coursediv = this.state.isEdittogged ? (
       <Row>
           
-          <Col xs="12" md="" className="mb-4">
-            <Nav tabs>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                  <i className="icon-calculator"></i> Edit information
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                  <i className="icon-basket-loaded"></i> Add curriculum
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                  <i className="icon-pie-chart"></i> Add a price
-                </NavLink>
-              </NavItem>
-            </Nav>
+          <Col xs="12" md="" className="mb-4">         
             
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="1">
                 <Card>
               <CardHeader>
-                <strong>New Course</strong>
+                <strong>Add Course</strong>
               </CardHeader>
               <CardBody>
 
-                <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
-
+                <Form onSubmit={this.handleSubmit} method="post" encType="multipart/form-data" className="form-horizontal" >
+                
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="text-input">Name</Label>
+                      <Label htmlFor="text-input">Owner Name:</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" name="corsename" value={this.state.corsename} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />
-                      <FormText color="muted">This is a help text</FormText>
+                    <Input type="select" name="user_id" onChange={this.handleChange} value={this.state.user_id}>
+                      <option value='' >Select Owner</option>
+                      {this.state.ownerrows.map((row, i) =>
+                      <option value={row.id} key={i}>{row.name}</option>
+                      )}
+                    </Input>
+                    </Col>
+                  </FormGroup>
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="text-input">Category:</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                    <Input type="select" name="category_id" onChange={this.handleChange} value={this.state.category_id}>
+                      <option value='' >Select Category</option>
+                      {this.state.categories.map((row, i) =>
+                      <option value={row.id} key={i}>{row.name}</option>
+                      )}
+                    </Input>
                     </Col>
                   </FormGroup>
 
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="select">Bio</Label>
+                      <Label htmlFor="text-input">Course name:</Label>
                     </Col>
-                    <Col xs="12" md="7">
-                      <Input type="select" id="corsebioid" name="corsebioid" onChange={this.handleChange} value={this.state.corsebioid}>
-                        <option value='' disabled>Please Select</option>
-                        {this.state.authors.map((row, i) =>
-                        <option value={row.id} key={i}>{row.fullname}</option>
-                        )}
-                      </Input>
-                    </Col>
-                    <Col xs="12" md="2">
-                      <a aria-pressed="true" className="btn btn-info btn-block active" onClick={this.toggleSuccess}>New Bio</a>
+                    <Col xs="12" md="9">
+                      <Input type="text" name="name" value={this.state.name} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Enter Course name.'" />                      
                     </Col>
                   </FormGroup>
 
                   <FormGroup row>
                     <Col md="3">
-                      <Label htmlFor="text-input">Subtitle</Label>
+                      <Label htmlFor="select">Description:</Label>
                     </Col>
                     <Col xs="12" md="9">
-                      <Input type="text" name="corsesubtitle" value={this.state.corsesubtitle} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Everything you need to know about video editing'" />
-                      <FormText color="muted">This is a help text</FormText>
-                    </Col>
-                  </FormGroup>
-
-                  <FormGroup row>
-                    <Col md="3">
-                      <Label htmlFor="textarea-input">Description</Label>
-                    </Col>
-                    <Col xs="12" md="9">
-                      <Input type="textarea" name="corsedesc" value={this.state.corsedesc} onChange={this.handleChange} id="textarea-input" rows="9"
+                     <Input type="textarea" name="description" value={this.state.description} onChange={this.handleChange} id="textarea-input" rows="9"
                              placeholder="Content..." />
+                    </Col>                    
+                  </FormGroup>
+
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="text-input">Code:</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input type="text" name="code" value={this.state.code} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Enter Course code.'" />                      
+                    </Col>
+                  </FormGroup>    
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="text-input">Price:</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input type="text" name="price" value={this.state.price} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Enter Course price.'" />                      
+                    </Col>
+                  </FormGroup>    
+                  
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="text-input">Time limit:</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input type="text" name="time_limit" value={this.state.time_limit} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Enter course time limit.'" />                      
                     </Col>
                   </FormGroup>
+                  
+                  <FormGroup row>
+                    <Col md="3">
+                      <Label htmlFor="text-input">Certification:</Label>
+                    </Col>
+                    <Col xs="12" md="9">
+                      <Input type="text" name="certification" value={this.state.certification} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Enter course certification.'" />                      
+                    </Col>
+                  </FormGroup>
+
+                  <FormGroup row>
+                  <Col md="3">
+                    <Label htmlFor="select">Status</Label>
+                  </Col>
+                  <Col xs="12" md="9">
+                    <Input type="select" id="is_active" name="is_active" onChange={this.handleChange} value={this.state.is_active}>
+                      <option value='' disabled>Please Select</option>
+                      <option value='1'>Active</option>
+                      <option value='0'>Inactive</option>
+                    </Input>
+                  </Col>
+                </FormGroup>      
+                  
 
                 </Form>
-
               </CardBody>
               <CardFooter>
-                <Button type="submit" size="sm" color="primary" onClick={this.handleSubmit}><i className="fa fa-dot-circle-o"></i> Edit Course</Button>
+              <Button type="submit" size="sm" color="primary" onClick={this.handleEditClick}><i className="fa fa-dot-circle-o"></i> Update</Button>
               </CardFooter>
             </Card>
               </TabPane>
 
-              <TabPane tabId="2">
-                <a aria-pressed="true" className="btn btn-info btn-block active" onClick={this.toggleLecture}>New Lecture</a>
-                {this.state.lecturerow.map((row, i) =>
-                <ListGroup key={i}>
-                  <ListGroupItem active action>{row.title} </ListGroupItem>
-                    {row.lecture.map((itemrow, i) =>
-                      <ListGroupItem onClick={() => this.handleLecture(itemrow)} action key={i}>{itemrow.lecturename}</ListGroupItem>
-                    )}
-                </ListGroup>
-                )}
-
-              </TabPane>
-
-              <TabPane tabId="3">
-                <Table responsive striped>
-                  <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Plan Type</th>
-                    <th>Plan Name</th>
-                    <th>Price</th>
-                    <th>Recurring</th>
-                    <th>Action</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-
-                  {this.state.rows.map((row, i) =>
-                  <tr key={i}>
-                    <td>{row.firstname +' '+ row.lastname}</td>
-                    <td>{row.email}</td>
-                    <td>{row.joindate}</td>
-                    <td>{row.joindate}</td>
-                    <td>$ {row.price}</td>
-                    
-                      <td>
-                        <Badge color="success">Active</Badge>
-                      </td>
-                    
-                  </tr>
-
-                  )}
-
-                  </tbody>
-                </Table>
-              </TabPane>
-
-              <Modal isOpen={this.state.success} toggle={this.toggleSuccess}
-                       className={'modal-info ' + this.props.className}>
-                  
-                  <ModalHeader toggle={this.toggleSuccess}>Add Bio</ModalHeader>
-                  <form onSubmit={this.handlebioSubmit}>
-                      <ModalBody>
-
-                          <p className="text-muted">If no password is given, students will receive an email to confirm their account and set a password.</p>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Fullname" name="fullname" value={this.state.fullname} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Headline" name="headline" value={this.state.headline} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Bio" name="bio" value={this.state.bio} onChange={this.handleChange}/>
-                          </InputGroup>
-                      
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button color="info" type="submit">Add</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleSuccess}>Cancel</Button>
-                      </ModalFooter>
-                  </form>
-
-                </Modal>
-
-                <Modal isOpen={this.state.modalLecture} toggle={this.toggleLecture}
-                       className={'modal-info ' + this.props.className}>
-                  
-                  <ModalHeader toggle={this.toggleLecture}>Add Lecture</ModalHeader>
-                  <form onSubmit={this.handlelectureSubmit}>
-                      <ModalBody>
-
-                          <p className="text-muted"></p>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Lecture name" name="lecturename" value={this.state.lecturename} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                            </InputGroupAddon>
-                            <Input type="select" id="lecturesectionid" name="lecturesectionid" onChange={this.handleChange} value={this.state.lecturesectionid}>
-                              <option value='' disabled>Please Select</option>
-                              {this.state.lecturerow.map((row, i) =>
-                              <option value={row.id} key={i}>{row.title}</option>
-                              )}
-                            </Input>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Description" name="lecturedesc" value={this.state.lecturedesc} onChange={this.handleChange}/>
-                          </InputGroup>
-                      
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button color="info" type="submit">Add</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleLecture}>Cancel</Button>
-                      </ModalFooter>
-                  </form>
-
-                </Modal>
             </TabContent>
           </Col>
           
         </Row>
+    ):(
+      <Row>
+          <Col xs="12" md="12">
+            <Card>
+              <CardHeader>
+                <i className="fa fa-align-justify"></i><strong>Owners</strong>
+                <div className="card-header-actions">
+                  <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Owners</button>
+                </div>
+              </CardHeader>
+              <CardBody>
+
+              <Table responsive striped>
+                  <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Code</th>
+                    <th>Price</th> 
+                    <th>status</th>                  
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {this.state.courserow.map((row, i) =>
+                  <tr key={i}>
+                    <td>{row.name}</td>
+                    <td>{row.c_name}</td>
+                    <td>{row.code}</td>
+                    <td>{row.price}</td>
+                    <td>
+                    {row.is_active == 1 ? (
+                      <Badge color="success">Active</Badge>
+                    ):(
+                      <Badge color="danger">Inactive</Badge>
+                    )}
+                      
+                    </td>
+                    <td>
+                      <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
+                      <Button color="danger" size="sm" onClick={() => this.handleDeleteClick(row.id)}><i className="fa fa-trash-o"></i></Button>
+                    </td>
+                  </tr>
+                  )}
+                  </tbody>
+                </Table>
+                
+                </CardBody>
+              
+            </Card>
+          </Col>
+          
+        </Row>
     );
-
-
     return (
       <div className="animated fadeIn">
-      {button}
-      {coursediv}
-      </div>
-    );
-
+          {coursediv}
+        </div>
+      ); 
 
 
   }

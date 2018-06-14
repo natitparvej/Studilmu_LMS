@@ -13,7 +13,7 @@ class Coursecategory extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
-    this.state = {lognUser: lognUser ,schoolid : lognUser.schoolid, categoryname: '',categoryprice: '', visible: false, msg : '', rows: []};
+    this.state = {lognUser: lognUser ,user_id : lognUser.schoolid, name: '', visible: false, msg : '', ownerrows : [], rows: []};
     this.handleChange = this.handleChange.bind(this);
     this.handlebioSubmit = this.handlebioSubmit.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
@@ -22,14 +22,27 @@ class Coursecategory extends Component {
     this.toggleSuccess = this.toggleSuccess.bind(this);
     this.toggle = this.toggle.bind(this);
     this.category = this.category.bind(this);
+    this.handleownerChange = this.handleownerChange.bind(this);
     this.category();
+
+    Service.getOwners().then(response => {
+      console.log(response);
+      if(response.students){
+        this.setState({ ownerrows: response.students });        
+      }
+    },err =>{
+      console.log(err);
+    });
+  
   }
 
+  
+  
   category(){
-    Service.getCategory({schoolid:this.state.lognUser.schoolid}).then(response => {
+    Service.getCategory().then(response => {
         console.log(response);
         if(response.ack){
-          this.setState({ rows : response.category, categoryname: '',categoryprice: ''});
+          this.setState({ rows : response.category, name: ''});
         }
     });
   }
@@ -39,14 +52,14 @@ class Coursecategory extends Component {
   }
 
   handlebioSubmit(event) {
-    console.log(event);
+    //console.log(event);
     event.preventDefault();
-    if(!this.state.categoryname){
+    if(!this.state.name){
       this.showalert('Enter Category Name'); return ;
     }
     console.log(this.state);
       Service.addCategory(this.state).then(response => {
-        console.log(response);
+        console.log('responce:'+response);
         if(response.ack){
           this.toggleSuccess();
           this.category();
@@ -72,17 +85,26 @@ class Coursecategory extends Component {
       });
     }
   }
+
+  handleownerChange(event){
+    this.setState({ [event.target.name]: event.target.value });
+    if(event.target.value){
+      this.filteruser( event.target.value );
+    }else{
+      this.getinstructor();
+    }
+  }
   handleEditClick(data){
     if(this.state.isEdittogged == true){
       Service.editCategory(this.state).then(response => {
         console.log(response);
         if(response.ack){
           this.category();
-          this.setState({isEdittogged: false, categoryname: '',categoryprice: '', categoryid : '' });
+          this.setState({isEdittogged: false, name: '', id : '' });
         }
       });
     }else{
-      this.setState({isEdittogged: true, categoryname: data.categoryname,categoryprice: data.price, categoryid : data.id });
+      this.setState({isEdittogged: true, name: data.name, id : data.id });
     }
   }
 
@@ -106,20 +128,11 @@ class Coursecategory extends Component {
                 <Label htmlFor="text-input">Category Name</Label>
               </Col>
               <Col xs="12" md="9">
-                <Input type="text" name="categoryname" value={this.state.categoryname} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />
+                <Input type="text" name="categoryname" value={this.state.name} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />
                 <FormText color="muted">This is a help text</FormText>
               </Col>
             </FormGroup>
-
-            <FormGroup row>
-              <Col md="3">
-                <Label htmlFor="text-input">Price</Label>
-              </Col>
-              <Col xs="12" md="9">
-                <Input type="number" name="categoryprice" value={this.state.categoryprice} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Everything you need to know about video editing'" />
-                <FormText color="muted">This is a help text</FormText>
-              </Col>
-            </FormGroup>
+            
 
           </Form>
 
@@ -143,8 +156,8 @@ class Coursecategory extends Component {
               <Table responsive striped>
                   <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Price</th>
+                    <th>#</th>    
+                    <th>Name</th>                   
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -152,8 +165,8 @@ class Coursecategory extends Component {
 
                   {this.state.rows.map((row, i) =>
                   <tr key={i}>
-                    <td>{row.categoryname}</td>
-                    <td>$ {row.price}</td>
+                    <td>{row.id}</td>
+                    <td>{row.name}</td>                    
                       <td>
                         <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
                         <Button color="danger" size="sm"><i className="fa fa-trash-o"></i></Button>
@@ -173,6 +186,19 @@ class Coursecategory extends Component {
                       <ModalBody>
 
                           <Alert color="danger" isOpen={this.state.visible}>{this.state.msg}</Alert>
+                          <InputGroup className="mb-3">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <i className="icon-user"></i>
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <Input type="select" name="user_id" onChange={this.handleChange} value={this.state.parentid}>
+                              <option value='' >Select Owner</option>
+                              {this.state.ownerrows.map((row, i) =>
+                              <option value={row.id} key={i}>{row.name}</option>
+                              )}
+                            </Input>
+                          </InputGroup>
 
                           <InputGroup className="mb-3">
                             <InputGroupAddon addonType="prepend">
@@ -180,7 +206,7 @@ class Coursecategory extends Component {
                                 <i className="icon-user"></i>
                               </InputGroupText>
                             </InputGroupAddon>
-                            <Input type="text" placeholder="Category Name" name="categoryname" value={this.state.categoryname} onChange={this.handleChange}/>
+                            <Input type="text" placeholder="Category Name" name="name" value={this.state.name} onChange={this.handleChange}/>
                           </InputGroup>
                           
                           <InputGroup className="mb-3">
@@ -189,7 +215,7 @@ class Coursecategory extends Component {
                                 <i className="icon-graph"></i>
                               </InputGroupText>
                             </InputGroupAddon>
-                            <Input type="number" placeholder="Price" name="categoryprice" value={this.state.categoryprice} onChange={this.handleChange}/>
+                            <Input type="number" placeholder="Price" name="price" value={this.state.price} onChange={this.handleChange}/>
                           </InputGroup>
                       
                       </ModalBody>
