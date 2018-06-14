@@ -70,6 +70,35 @@ const Companylist = Loadable({
   loading: Loading,
 });
 
+const Notification = Loadable({
+  loader: () => import('./views/Eventsengine/Notification'),
+  loading: Loading,
+});
+
+const History = Loadable({
+  loader: () => import('./views/Eventsengine/History'),
+  loading: Loading,
+});
+
+const Pending = Loadable({
+  loader: () => import('./views/Eventsengine/Pending'),
+  loading: Loading,
+});
+
+const Eventslist = Loadable({
+  loader: () => import('./views/Events/Eventslist'),
+  loading: Loading,
+});
+
+const Aboutus = Loadable({
+  loader: () => import('./views/CMSmanagement/Aboutus'),
+  loading: Loading,
+});
+
+const Contactus = Loadable({
+  loader: () => import('./views/CMSmanagement/Contactus'),
+  loading: Loading,
+});
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -83,7 +112,18 @@ const routes = [
   { path: '/user/owner', name: 'Owner', component: Owner },
   { path: '/user/instructor', name: 'Instructor', component: Instructor },
 
+  { path: '/eventsengine', exact: true, name: 'Events', component: Notification },
+  { path: '/eventsengine/notification', name: 'Notification', component: Notification },
+  { path: '/eventsengine/history', name: 'History', component: History },
+  { path: '/eventsengine/pending', name: 'Pending', component: Pending },
+
+  //{ path: '/events', exact: true, name: 'Events', component: Eventslist },
+  { path: '/events/list', exact: true, name: 'Events', component: Eventslist },
   { path: '/company', exact: true, name: 'User', component: Companylist },
+
+  { path: '/cms', exact: true, name: 'CMS Management', component: Aboutus },
+  { path: '/cms/aboutus', name: 'About us', component: Aboutus },
+  { path: '/cms/contactus', name: 'Contact Us', component: Contactus },
 
   { path: '/course', exact: true, name: 'Course', component: Course },
   { path: '/course/course', name: 'Add Course', component: Course },
