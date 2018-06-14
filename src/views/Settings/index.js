@@ -1,5 +1,5 @@
-import Settings from './Settings';
+import Sitesetting from './Sitesetting';
 
 export {
-   Settings
+    Sitesetting
 };

@@ -84,12 +84,36 @@ export default {
       ],
     },
 
+
+
+    {
+      name: 'Setting',
+      url: '/buttons',
+      icon: 'icon-list',
+      children: [
+        {
+          name: 'Site Setting',
+          url: '/settings/sitesetting',
+          // icon: 'icon-user-follow',
+        },
+        {
+          name: 'Subscription Package',
+          url: '/settings/package',
+          // icon: 'icon-user',
+        },        
+      ],
+    },
+
+
+
+
     {
       name: 'CMS',
       url: '/buttons',
       icon: 'icon-list',
       url: '/cms/aboutus',
     },
+
 
     {
       name: 'Plan',
