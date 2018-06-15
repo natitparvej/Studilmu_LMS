@@ -4,6 +4,7 @@ const url = "http://13.251.15.73:8080";
 
 
 	function editSetting(data) {
+		console.log(data);
 	    return axios.post(url+'/editSetting',data).then(response => {
 	      return response.data;
 	    }).catch(error => {

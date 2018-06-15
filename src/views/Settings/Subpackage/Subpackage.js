@@ -9,7 +9,7 @@ import classnames from 'classnames';
 import authService from '../../Service/authService.js';
 import Service from './../settingService.js';
 
-class Sitesetting extends Component {
+class Subpackage extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
@@ -234,4 +234,4 @@ class Sitesetting extends Component {
   }
 }
 
-export default Sitesetting;
+export default Subpackage;

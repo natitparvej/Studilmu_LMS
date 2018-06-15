@@ -49,6 +49,25 @@ function getCategory(data) {
 		});
 	}
 
+	function filtercurseCategory(data) {
+		console.log(data);		
+		return axios.post(url+'/filtercurseCategory').then(response => {
+			return response.data;
+		}).catch(error => {
+			return error;
+			console.log(error);
+		});
+	}
+
+	function filterCourse(data) {
+		return axios.post(url+'/filterCourse').then(response => {
+			return response.data;
+		}).catch(error => {
+			return error;
+			console.log(error);
+		});
+	}
+
 	function getAuthors(data) {
 	    return axios.post(url+'/getAuthors',data).then(response => {
 	      return response.data;
@@ -122,5 +141,5 @@ function getCategory(data) {
 	}
 
 export default {
-    getAuthors,  addcourse, getCourses, addAuthors,getLectures, getLecturedetails, addLecture , getCategory, getOwners, addCategory, editCategory, editcourse
+    getAuthors,  addcourse, getCourses, addAuthors,getLectures, getLecturedetails, addLecture , getCategory, getOwners, addCategory, editCategory, editcourse, filtercurseCategory, filterCourse
 };

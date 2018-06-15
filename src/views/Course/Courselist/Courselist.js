@@ -27,6 +27,7 @@ class Courselist extends Component {
     this.toggleSuccess = this.toggleSuccess.bind(this);
     this.toggleLecture = this.toggleLecture.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
+    this.handleownerChange = this.handleownerChange.bind(this);
     
 
     this.toggle = this.toggle.bind(this);
@@ -63,6 +64,31 @@ class Courselist extends Component {
         }
     });
   }
+
+  handleownerChange(event){
+    this.setState({ [event.target.name]: event.target.value });
+    if(event.target.value){
+      this.filterCourse( event.target.value );
+    }else{
+      this.courses();
+    }
+  }
+
+  filterCourse(user_id){
+    //console.log(user_id);
+    Service.filterCourse({ user_id : user_id }).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.setState({ courserow : response.course });
+      }else{
+        this.setState({ rows: [] });
+      }
+    },err =>{
+      console.log(err);
+    });
+  }
+
+  
 
   authors(){
     Service.getAuthors({schoolid:this.state.lognUser.schoolid}).then(response => {
@@ -207,7 +233,7 @@ class Courselist extends Component {
               <TabPane tabId="1">
                 <Card>
               <CardHeader>
-                <strong>Add Course</strong>
+                <strong>Edit Course</strong>
               </CardHeader>
               <CardBody>
 
@@ -324,11 +350,20 @@ class Courselist extends Component {
       <Row>
           <Col xs="12" md="12">
             <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Owners</strong>
-                <div className="card-header-actions">
-                  <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Owners</button>
-                </div>
+            <CardHeader>       
+                <FormGroup row>
+                <Col md="2">
+                  <i className="fa fa-align-justify"></i><strong>Course List</strong>
+                </Col>
+                <Col xs="12" md="8">
+                  <Input type="select" name="ownerid" onChange={this.handleownerChange} value={this.state.ownerid}>
+                    <option value='' >Select Owner</option>
+                    {this.state.ownerrows.map((row, i) =>
+                    <option value={row.id} key={i}>{row.name}</option>
+                    )}
+                  </Input>
+                </Col>                
+                </FormGroup>
               </CardHeader>
               <CardBody>
 
