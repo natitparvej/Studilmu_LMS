@@ -214,9 +214,7 @@ class Instructor extends Component {
       <Row>
           <Col xs="12" md="12">
             <Card>
-              <CardHeader>
-                
-
+              <CardHeader>       
                 <FormGroup row>
                 <Col md="2">
                   <i className="fa fa-align-justify"></i><strong>  Instructor</strong>
@@ -235,8 +233,6 @@ class Instructor extends Component {
                   </div>
                 </Col>
                 </FormGroup>
-
-
               </CardHeader>
               <CardBody>
 

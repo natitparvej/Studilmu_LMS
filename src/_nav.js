@@ -45,16 +45,26 @@ export default {
           url: '/course/coursecategory',
           // icon: 'icon-user-follow',
         },
+        {
+          name: 'Add Course',
+          url: '/course/course',
+          // icon: 'icon-user-follow',
+        }, 
+        {
+          name: 'List Course',
+          url: '/course/courselist',
+          // icon: 'icon-user-follow',
+        },         
       ],
     },
 
     {
-      name: 'Events',
+      name: 'Events Management',
       url: '/buttons',
       icon: 'icon-list',
       children: [
         {
-          name: 'Add Events',
+          name: 'Events List',
           url: '/events/list',
           // icon: 'icon-user-follow',
         },
@@ -98,7 +108,7 @@ export default {
         },
         {
           name: 'Subscription Package',
-          url: '/settings/package',
+          url: '/settings/subpackage',
           // icon: 'icon-user',
         },        
       ],

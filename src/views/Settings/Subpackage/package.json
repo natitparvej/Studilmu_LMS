@@ -1,0 +1,6 @@
+{
+  "name": "Subpackage",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Sabpackage.js"
+}
