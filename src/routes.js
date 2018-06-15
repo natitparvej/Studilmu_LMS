@@ -105,6 +105,11 @@ const Contactus = Loadable({
   loading: Loading,
 });
 
+const Templates = Loadable({
+  loader: () => import('./views/Email/Templates'),
+  loading: Loading,
+});
+
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -125,6 +130,8 @@ const routes = [
   //{ path: '/events', exact: true, name: 'Events', component: Eventslist },
   { path: '/events/list', exact: true, name: 'Events', component: Eventslist },
   { path: '/company', exact: true, name: 'User', component: Companylist },
+
+  { path: '/emailtemplate', exact: true, name: 'Email Templates', component: Templates },
 
   { path: '/cms', exact: true, name: 'CMS Management', component: Aboutus },
   { path: '/cms/aboutus', name: 'About us', component: Aboutus },

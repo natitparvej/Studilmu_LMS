@@ -30,8 +30,26 @@ const url = "http://13.251.15.73:8080";
 	    });
 	}
 
+	function getOwners(data) {
+	    return axios.post(url+'/getOwners',{usertype : "C"}).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
+
+	function filterEvent(data) {
+	    return axios.post(url+'/filterEvent',data).then(response => {
+	      return response.data;
+	    }).catch(error => {
+	    	return error;
+	      console.log(error);
+	    });
+	}
+
 	
 export default {
-    getEvent, addEvent, editEvent
+    getEvent, addEvent, editEvent, getOwners, filterEvent
      
 };
