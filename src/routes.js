@@ -60,12 +60,10 @@ const Coursecategory = Loadable({
    loading: Loading,
  });
 
- /*const Subpackage = Loadable({
-  loader: () => import('./views/Settings/Subpackage'),
+ const Subspackage = Loadable({
+  loader: () => import('./views/Settings/Subspackage'),
   loading: Loading,
-});*/
-
-
+});
 
 const Dashboard = Loadable({
   loader: () => import('./views/Dashboard'),
@@ -138,7 +136,7 @@ const routes = [
   { path: '/course/courselist', name: 'Courses', component: Courselist },
   { path: '/course/lecture/:id', params: { id: '' }, name: 'Lectures', component: Lecture },
   { path: '/settings/sitesetting', exact: true, name: 'Site Setting', component: Sitesetting },
- // { path: '/settings/subpackage', exact: true, name: 'Subscription Package', component: Subpackage },
+  { path: '/settings/subspackage', exact: true, name: 'Subscription Package', component: Subspackage },
 
   //{ path: '/settings', name: 'Account Settings', component: Settings },
 

@@ -108,7 +108,7 @@ export default {
         },
         {
           name: 'Subscription Package',
-          url: '/settings/subpackage',
+          url: '/settings/subspackage',
           // icon: 'icon-user',
         },        
       ],
