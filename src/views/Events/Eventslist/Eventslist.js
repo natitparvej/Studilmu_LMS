@@ -29,7 +29,14 @@ class Eventslist extends Component {
     this.handleownerChange = this.handleownerChange.bind(this);
     this.handledateChange = this.handledateChange.bind(this);
     this.notification();
-  
+    Service.getOwners().then(response => {
+      console.log(response);
+      if(response.students){
+        this.setState({ ownerrows: response.students });
+      }
+    },err =>{
+      console.log(err);
+    });
   }
   
   notification(){
@@ -64,9 +71,18 @@ class Eventslist extends Component {
   handleownerChange(event){
     this.setState({ [event.target.name]: event.target.value });
     if(event.target.value){
-      this.filteruser( event.target.value );
+      Service.filterEvent({ ownerid : event.target.value }).then(response => {
+        console.log(response);
+        if(response.ack){
+          this.setState({ rows: response.template });
+        }else{
+          this.setState({ rows: [] });
+        }
+      },err =>{
+        console.log(err);
+      });
     }else{
-      this.getinstructor();
+      this.notification();
     }
   }
   
@@ -254,10 +270,27 @@ class Eventslist extends Component {
           <Col xs="12" md="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i><strong>Event</strong>
-                <div className="card-header-actions">
+
+                <FormGroup row>
+                <Col md="2">
+                  <i className="fa fa-align-justify"></i><strong>  Event</strong>
+                </Col>
+                <Col xs="12" md="8">
+                  <Input type="select" name="ownerid" onChange={this.handleownerChange} value={this.state.ownerid}>
+                    <option value='' >Select Owner</option>
+                    {this.state.ownerrows.map((row, i) =>
+                    <option value={row.id} key={i}>{row.name}</option>
+                    )}
+                  </Input>
+                </Col>
+                <Col xs="12" md="2">
+                  <div className="card-header-actions">
                     <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.handleEdit}>Add Event</button>
-                </div>
+                  </div>
+                </Col>
+                </FormGroup>
+
+
               </CardHeader>
               <CardBody>
               <Table responsive striped>

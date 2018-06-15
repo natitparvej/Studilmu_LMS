@@ -92,6 +92,13 @@ export default {
     },
 
     {
+      name: 'Email Templates',
+      url: '/buttons',
+      icon: 'icon-list',
+      url: '/emailtemplate',
+    },
+
+    {
       name: 'Plan',
       url: 'http://coreui.io/react/',
       icon: 'icon-graph',

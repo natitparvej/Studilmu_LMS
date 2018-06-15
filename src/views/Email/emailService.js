@@ -3,8 +3,8 @@ import axios from 'axios';
 const url = "http://13.251.15.73:8080";
 
 	
-	function getCms(data) {	
-	    return axios.get(url+'/getCms').then(response => {
+	function getEmailtemplte() {	
+	    return axios.get(url+'/getEmailtemplte').then(response => {
 	      return response.data;
 	    }).catch(error => {
 	    	return error;
@@ -12,8 +12,8 @@ const url = "http://13.251.15.73:8080";
 	    });
 	}
 
-	function addCms(data) {	
-	    return axios.post(url+'/addCms', data).then(response => {
+	function addEmailtemplte(data) {	
+	    return axios.post(url+'/addEmailtemplte', data).then(response => {
 	      return response.data;
 	    }).catch(error => {
 	    	return error;
@@ -21,8 +21,8 @@ const url = "http://13.251.15.73:8080";
 	    });
 	}
 
-	function editCms(data) {	
-	    return axios.post(url+'/editCms', data).then(response => {
+	function editEmailtemplte(data) {	
+	    return axios.post(url+'/editEmailtemplte', data).then(response => {
 	      return response.data;
 	    }).catch(error => {
 	    	return error;
@@ -32,6 +32,6 @@ const url = "http://13.251.15.73:8080";
 
 	
 export default {
-    getCms, addCms, editCms
+    getEmailtemplte, addEmailtemplte, editEmailtemplte
      
 };
