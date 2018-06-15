@@ -1,6 +1,6 @@
 import Sitesetting from './Sitesetting';
-import Subpackage from './Subpackage';
+import Subspackage from './Subspackage';
 
 export {
-    Sitesetting, Subpackage
+    Sitesetting, Subspackage
 };

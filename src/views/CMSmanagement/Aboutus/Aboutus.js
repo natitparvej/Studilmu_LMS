@@ -72,25 +72,25 @@ class Aboutus extends Component {
   
   handleEditClick(data){
     if(this.state.isEdittogged == true){
-      Service.editEvent(this.state).then(response => {
+      Service.editCms(this.state).then(response => {
         console.log(response);
         if(response.ack){
           this.notification();
-          this.setState({isEdittogged: 2, name: '', id : '', desc : '',audience : '', duration : '' });
+          this.setState({isEdittogged: 2, name: '', id : '', desc : '',meta_title : '', meta_desc : '', meta_key : '' });
         }
       });
     }else{
       console.log(data);
-      this.setState({isEdittogged: 1, name: data.title, id : data.id, desc : data.description, audience : data.audience, duration : data.meta_key });
+      this.setState({isEdittogged: 1, name: data.title, id : data.id, desc : data.description, meta_title : data.meta_title, meta_desc : data.meta_description, meta_key: data.meta_key, status: data.is_active });
     }
   }
 
   handleAddClick(){
-    Service.addEvent(this.state).then(response => {
+    Service.addCms(this.state).then(response => {
       console.log(response);
       if(response.ack){
         this.notification();
-        this.setState({isEdittogged: 2, name: '', id : '', desc : '',audience : '', duration : '',});
+        this.setState({isEdittogged: 2, name: '', id : '', desc : '',meta_title : '', meta_desc : '', meta_key : '',});
       }
     });
   }
@@ -98,7 +98,7 @@ class Aboutus extends Component {
   onChange = time => this.setState({ time });
 
   handleEdit(data){
-    this.setState({isEdittogged: 0, name: '', id : '', desc : '',audience : '', duration : '', });
+    this.setState({isEdittogged: 0, name: '', id : '', desc : '',meta_title : '', meta_desc : '', meta_key : '', });
   }
 
   render() {
@@ -113,10 +113,10 @@ class Aboutus extends Component {
             
             <FormGroup row>
               <Col md="3">
-                <Label htmlFor="text-input">Event Name</Label>
+                <Label htmlFor="text-input">Page Name</Label>
               </Col>
               <Col xs="12" md="9">
-                <Input type="text" name="name" value={this.state.name} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />    
+                <Input type="text" name="name" value={this.state.name} onChange={this.handleChange} id="text-input" placeholder="" />    
               </Col>
             </FormGroup>
 
@@ -125,10 +125,40 @@ class Aboutus extends Component {
                 <Label htmlFor="text-input">Meta Title</Label>
               </Col>
               <Col xs="12" md="7">
-                <Input type="text" name="duration" value={this.state.duration} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />    
+                <Input type="text" name="meta_title" value={this.state.meta_title} onChange={this.handleChange} id="text-input" placeholder="" />    
               </Col>
             </FormGroup>
 
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Meta Description</Label>
+              </Col>
+              <Col xs="12" md="7">
+                <Input type="text" name="meta_desc" value={this.state.meta_desc} onChange={this.handleChange} id="text-input" placeholder="" />    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Meta Key</Label>
+              </Col>
+              <Col xs="12" md="7">
+                <Input type="text" name="meta_key" value={this.state.meta_key} onChange={this.handleChange} id="text-input" placeholder="" />    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Status:</Label>
+              </Col>
+              <Col xs="12" md="9">
+              <Input type="select" name="status" onChange={this.handleChange} value={this.state.status}>
+                <option value='' >Select Status</option>
+                <option value='1'>Active</option>
+                <option value='0'>Inactive</option>
+              </Input>
+              </Col>
+            </FormGroup>
 
             <FormGroup row>
               <Col md="3">
@@ -159,32 +189,49 @@ class Aboutus extends Component {
             
             <FormGroup row>
               <Col md="3">
-                <Label htmlFor="text-input">Event Name</Label>
+                <Label htmlFor="text-input">Page Name</Label>
               </Col>
               <Col xs="12" md="9">
-                <Input type="text" name="name" value={this.state.name} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />    
+                <Input type="text" name="name" value={this.state.name} onChange={this.handleChange} id="text-input" placeholder="" />    
               </Col>
             </FormGroup>
 
             <FormGroup row>
               <Col md="3">
-                <Label htmlFor="text-input">Duration</Label>
+                <Label htmlFor="text-input">Meta Title</Label>
               </Col>
               <Col xs="12" md="7">
-                <Input type="text" name="duration" value={this.state.duration} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Advanced Photoshop Techniques' or 'Watercolors for Dummies'" />    
+                <Input type="text" name="meta_title" value={this.state.meta_title} onChange={this.handleChange} id="text-input" placeholder="" />    
               </Col>
             </FormGroup>
 
             <FormGroup row>
               <Col md="3">
-                <Label htmlFor="text-input">Audience:</Label>
+                <Label htmlFor="text-input">Meta Description</Label>
+              </Col>
+              <Col xs="12" md="7">
+                <Input type="text" name="meta_desc" value={this.state.meta_desc} onChange={this.handleChange} id="text-input" placeholder="" />    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Meta Key</Label>
+              </Col>
+              <Col xs="12" md="7">
+                <Input type="text" name="meta_key" value={this.state.meta_key} onChange={this.handleChange} id="text-input" placeholder="" />    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Status:</Label>
               </Col>
               <Col xs="12" md="9">
-              <Input type="select" name="audience" onChange={this.handleChange} value={this.state.audience}>
-                <option value='' >Select Audience</option>
-                <option value='P'>This is a private event</option>
-                <option value='S'>Only specific users can see this event</option>
-                <option value='A'>Everybody can see this event</option>
+              <Input type="select" name="status" onChange={this.handleChange} value={this.state.status}>
+                <option value='' >Select Status</option>
+                <option value='1'>Active</option>
+                <option value='0'>Inactive</option>
               </Input>
               </Col>
             </FormGroup>
@@ -213,17 +260,17 @@ class Aboutus extends Component {
               <CardHeader>
                 <i className="fa fa-align-justify"></i><strong>CMS Management</strong>
                 <div className="card-header-actions">
-                   
+                   <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.handleEdit}>Add Pages</button>
                 </div>
               </CardHeader>
               <CardBody>
               <Table responsive striped>
                   <thead>
                   <tr>
-                    <th>#</th>    
-                    <th>Name</th>
+                    <th>#</th>
                     <th>Title</th>
                     <th>Description</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -231,12 +278,13 @@ class Aboutus extends Component {
                   {this.state.rows.map((row, i) =>
                   <tr key={i}>
                     <td>{i+1}</td>
-                    <td>About Us </td>
                     <td>{row.title} </td>
-                    
                     <td>{ row.description  }</td>
-                   
-                    
+                    <td>{this.state.rows[i].is_active == 1 ? (
+                      <Badge color="success">Active</Badge>
+                    ):(
+                      <Badge color="danger">Inactive</Badge>
+                    )}</td>
                     <td>
                       <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>&nbsp;
                       <Button color="danger" size="sm"><i className="fa fa-trash-o"></i></Button>

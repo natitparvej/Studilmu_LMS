@@ -22,7 +22,25 @@ const url = "http://13.251.15.73:8080";
 		});
 }
 
+function getPackage(data) {
+	return axios.post(url+'/getPackage',data).then(response => {
+		return response.data;
+	}).catch(error => {
+		return error;
+		console.log(error);
+	});
+}
+
+function addPackage(data) {
+	return axios.post(url+'/addPackage',data).then(response => {
+		return response.data;
+	}).catch(error => {
+		return error;
+		console.log(error);
+	});
+}
+
 
 export default {
-	editSetting, getSetting
+	editSetting, getSetting, getPackage, addPackage
 };
