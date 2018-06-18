@@ -59,6 +59,19 @@ export default {
     },
 
     {
+      name: 'Coupon Management',
+      url: '/buttons',
+      icon: 'icon-list',
+      children: [
+        {
+          name: 'Coupon List',
+          url: '/coupons/list',
+          // icon: 'icon-user-follow',
+        },
+      ],
+    },
+
+    {
       name: 'Events Management',
       url: '/buttons',
       icon: 'icon-list',
