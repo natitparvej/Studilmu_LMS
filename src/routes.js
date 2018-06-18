@@ -94,7 +94,10 @@ const Eventslist = Loadable({
   loader: () => import('./views/Events/Eventslist'),
   loading: Loading,
 });
-
+const Couponslist = Loadable({
+  loader: () => import('./views/Coupons/Couponslist'),
+  loading: Loading,
+});
 const Aboutus = Loadable({
   loader: () => import('./views/CMSmanagement/Aboutus'),
   loading: Loading,
@@ -128,6 +131,7 @@ const routes = [
   { path: '/eventsengine/pending', name: 'Pending', component: Pending },
 
   //{ path: '/events', exact: true, name: 'Events', component: Eventslist },
+  { path: '/coupons/list', exact: true, name: 'Coupons', component: Couponslist },
   { path: '/events/list', exact: true, name: 'Events', component: Eventslist },
   { path: '/company', exact: true, name: 'User', component: Companylist },
 
