@@ -20,6 +20,7 @@ class Coursecategory extends Component {
     this.handleEdit = this.handleEdit.bind(this);
 
     this.toggleSuccess = this.toggleSuccess.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
     this.toggle = this.toggle.bind(this);
     this.category = this.category.bind(this);
     this.handleownerChange = this.handleownerChange.bind(this);
@@ -65,6 +66,15 @@ class Coursecategory extends Component {
           this.category();
         }
       });
+  }
+
+  handleDeleteClick(id){ 
+    console.log(id);   
+    Service.deleteCategory({id : id}).then(response => {     
+      if(response.ack){
+        this.category();
+      }
+    });
   }
 
   showalert(msgtxt) {
@@ -196,11 +206,11 @@ class Coursecategory extends Component {
 
                   {this.state.rows.map((row, i) =>
                   <tr key={i}>
-                    <td>{row.id}</td>
+                    <td>{i+1}.</td>
                     <td>{row.name}</td>                    
                       <td>
                         <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
-                        <Button color="danger" size="sm"><i className="fa fa-trash-o"></i></Button>
+                        <Button color="danger" size="sm" onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.handleDeleteClick(row.id) } }><i className="fa fa-trash-o"></i></Button>
                       </td>
                     
                   </tr>
