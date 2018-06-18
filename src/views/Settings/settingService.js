@@ -23,7 +23,7 @@ const url = "http://13.251.15.73:8080";
 }
 
 function getPackage(data) {
-	return axios.post(url+'/getPackage',data).then(response => {
+	return axios.get(url+'/getPackage').then(response => {
 		return response.data;
 	}).catch(error => {
 		return error;
@@ -39,8 +39,25 @@ function addPackage(data) {
 		console.log(error);
 	});
 }
+function updatePackage(data) {
+	return axios.post(url+'/updatePackage',data).then(response => {
+		return response.data;
+	}).catch(error => {
+		return error;
+		console.log(error);
+	});
+}
+
+function deletePackage(data) {
+	return axios.post(url+'/deletePackage',data).then(response => {
+		return response.data;
+	}).catch(error => {
+		return error;
+		console.log(error);
+	});
+}
 
 
 export default {
-	editSetting, getSetting, getPackage, addPackage
+	editSetting, getSetting, getPackage, addPackage, updatePackage, deletePackage
 };

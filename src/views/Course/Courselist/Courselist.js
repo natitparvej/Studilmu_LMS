@@ -28,6 +28,7 @@ class Courselist extends Component {
     this.toggleLecture = this.toggleLecture.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleownerChange = this.handleownerChange.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
     
 
     this.toggle = this.toggle.bind(this);
@@ -72,6 +73,14 @@ class Courselist extends Component {
     }else{
       this.courses();
     }
+  }
+
+  handleDeleteClick(id){    
+    Service.deleteCourse({id : id}).then(response => {      
+      if(response.ack){
+        this.courses();
+      }
+    });
   }
 
   filterCourse(user_id){
@@ -370,6 +379,7 @@ class Courselist extends Component {
               <Table responsive striped>
                   <thead>
                   <tr>
+                    <th>#</th>  
                     <th>Name</th>
                     <th>Category</th>
                     <th>Code</th>
@@ -381,6 +391,7 @@ class Courselist extends Component {
                   <tbody>
                   {this.state.courserow.map((row, i) =>
                   <tr key={i}>
+                    <td>{i+1}.</td>
                     <td>{row.name}</td>
                     <td>{row.c_name}</td>
                     <td>{row.code}</td>
@@ -395,7 +406,7 @@ class Courselist extends Component {
                     </td>
                     <td>
                       <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
-                      <Button color="danger" size="sm" onClick={() => this.handleDeleteClick(row.id)}><i className="fa fa-trash-o"></i></Button>
+                      <Button color="danger" size="sm" onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.handleDeleteClick(row.id) } }><i className="fa fa-trash-o"></i></Button>
                     </td>
                   </tr>
                   )}

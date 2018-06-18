@@ -17,27 +17,25 @@ class Subspackage extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
-    this.state = {lognUser: lognUser , name: '', visible: false, msg : '', ownerrows : [], rows: [],
-                  isEdittogged : 2, startDate: moment(), time: '10:00', name : '', audience : '', desc : '', duration : '',
-                  };
+    this.state = {lognUser: lognUser , visible: false, msg : '',  name : '', plan: '', billing_duration:'', no_of_user:'', course:'', single_signon:'', custom_report:'', automation:'',  success_message : '', ssl_domain : '', price : '', no_of_course:'', is_active:'', rows:[]};
     this.handleChange = this.handleChange.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleEdit = this.handleEdit.bind(this);
     this.handleAddClick = this.handleAddClick.bind(this);
     this.toggleSuccess = this.toggleSuccess.bind(this);
     this.package = this.package.bind(this);
+    this.handleDeleteClick = this.handleDeleteClick.bind(this);
     this.handleownerChange = this.handleownerChange.bind(this);
     this.handledateChange = this.handledateChange.bind(this);
     this.package();
   
   }
   
-  package(){
-    console.log(this.state);
+  package(){  
     Service.getPackage().then(response => {
         console.log(response);
-        if(response.ack){
-          this.setState({ rows : response.event});
+        if(response.ack){          
+          this.setState({ rows : response.template});
         }
     });
   }
@@ -72,25 +70,36 @@ class Subspackage extends Component {
   
   handleEditClick(data){
     if(this.state.isEdittogged == true){
-      Service.editEvent(this.state).then(response => {
+      Service.updatePackage(this.state).then(response => {
         console.log(response);
-        if(response.ack){
+        if(response.ack){  
           this.package();
-          this.setState({isEdittogged: 2, name: '', id : '', desc : '',audience : '', duration : '',startDate: moment(), time: '10:00' });
+          this.setState({isEdittogged: 2, name: '', id : '' });
+          
         }
       });
     }else{
       console.log(data);
-      this.setState({isEdittogged: 1, name: data.title, id : data.id, desc : data.description, startDate:moment(data.date), time: new Date(data.date).toLocaleTimeString(), audience : data.audience, duration : data.duration });
+      this.setState({isEdittogged: 1,id:data.id, name: data.name, plan: data.plan, billing_duration: data.billing_duration, no_of_user: data.no_of_user, course: data.course, single_signon: data.single_signon, custom_report: data.custom_report, automation: data.automation, success_message: data.success_message, ssl_domain: data.ssl_domain,price: data.price, no_of_course: data.no_of_course, is_active: data.is_active });
     }
   }
 
+  handleDeleteClick(id){    
+    Service.deletePackage({id : id}).then(response => {
+      console.log(response);
+      if(response.ack){
+        this.package();
+      }
+    });
+  }
+
   handleAddClick(){
+    console.log(this.state);
     Service.addPackage(this.state).then(response => {
       console.log(response);
       if(response.ack){
         this.package();
-        this.setState({isEdittogged: 2, name: '', id : '', desc : '',audience : '', duration : '',startDate: moment(), time: '10:00' });
+        this.setState({isEdittogged: 2, name: '', id : '' });        
       }
     });
   }
@@ -98,7 +107,7 @@ class Subspackage extends Component {
   onChange = time => this.setState({ time });
 
   handleEdit(data){
-    this.setState({isEdittogged: 0, name: '', id : '', desc : '',audience : '', duration : '',startDate: moment(), time: '10:00' });
+    this.setState({isEdittogged: 0, name: '', id : ''});
   }
 
   render() {
@@ -169,6 +178,15 @@ class Subspackage extends Component {
 
              <FormGroup row>
               <Col md="3">
+                <Label htmlFor="text-input">No Of Course</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="text" name="no_of_course" value={this.state.no_of_course} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Price'" />     
+              </Col>
+            </FormGroup>
+
+             <FormGroup row>
+              <Col md="3">
                 <Label htmlFor="text-input">Single Sign-On support</Label>
               </Col>
               <Col xs="12" md="7">
@@ -178,6 +196,76 @@ class Subspackage extends Component {
               </Input>    
               </Col>
             </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Custom Report</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="custom_report" onChange={this.handleChange} value={this.state.custom_report}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Automation</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="automation" onChange={this.handleChange} value={this.state.automation}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Success Message</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="success_message" onChange={this.handleChange} value={this.state.success_message}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">SSL Domain</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="ssl_domain" onChange={this.handleChange} value={this.state.ssl_domain}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Price</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="text" name="price" value={this.state.price} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Price'" />     
+              </Col>
+            </FormGroup>
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Status</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="is_status" onChange={this.handleChange} value={this.state.is_status}>               
+                <option value='1'>Active</option>
+                <option value='0'>Deactive</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+           
+
           </Form>
         </CardBody>
         <CardFooter>
@@ -251,6 +339,15 @@ class Subspackage extends Component {
               </Col>              
             </FormGroup>
 
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">No Of Course</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="text" name="no_of_course" value={this.state.no_of_course} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Price'" />     
+              </Col>
+            </FormGroup>
+
              <FormGroup row>
               <Col md="3">
                 <Label htmlFor="text-input">Single Sign-On support</Label>
@@ -263,7 +360,62 @@ class Subspackage extends Component {
               </Col>
             </FormGroup>
 
-            
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Custom Report</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="custom_report" onChange={this.handleChange} value={this.state.custom_report}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Automation</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="automation" onChange={this.handleChange} value={this.state.automation}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Success Message</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="success_message" onChange={this.handleChange} value={this.state.success_message}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">SSL Domain</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="select" name="ssl_domain" onChange={this.handleChange} value={this.state.ssl_domain}>               
+                <option value='1'>Yes</option>
+                <option value='0'>No</option>
+              </Input>    
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Price</Label>
+              </Col>
+              <Col xs="12" md="7">
+              <Input type="text" name="price" value={this.state.price} onChange={this.handleChange} id="text-input" placeholder="e.g. 'Price'" />     
+              </Col>
+            </FormGroup>
 
            
 
@@ -298,24 +450,24 @@ class Subspackage extends Component {
                   <tbody>
                   {this.state.rows.map((row, i) =>
                   <tr key={i}>
-                    <td>{i+1}</td>
-                    <td>{row.title} </td>
-                    
-                    <td>{ new Date(row.date).toDateString()+' '+new Date(row.date).toLocaleTimeString()  }</td>
-                    
-                    {this.state.rows[i].audience == 'P' ? (
-                         <td>This is a private event</td>
+                    <td>{i+1}.</td>
+                    <td>{row.name} </td>       
+                                      
+                    {row.plan == 'S' ? (
+                         <td>Standard Plans</td>
                     ) : (
-                        this.state.rows[i].audience == 'S' ? (
-                          <td>Only specific users can see this event</td>
-                        ):(
-                          <td>Everybody can see this event</td>
-                        )
+                      <td>Unlimited Plans</td>
+                    )}
+
+                    {row.billing_duration == 'A' ? (
+                         <td>Annual Pricing</td>
+                    ) : (
+                        <td>Monthly Pricing</td>
                     )}
                     
                     <td>
                       <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>&nbsp;
-                      <Button color="danger" size="sm"><i className="fa fa-trash-o"></i></Button>
+                      <Button color="danger" size="sm" onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.handleDeleteClick(row.id) } }><i className="fa fa-trash-o"></i></Button>
                     </td>
                   </tr>
                   )}
