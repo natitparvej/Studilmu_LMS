@@ -1,0 +1,6 @@
+{
+  "name": "Grouplist",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Grouplist.js"
+}
