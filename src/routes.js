@@ -113,6 +113,16 @@ const Templates = Loadable({
   loading: Loading,
 });
 
+const Grouplist = Loadable({
+  loader: () => import('./views/Group/Grouplist'),
+  loading: Loading,
+});
+
+const Groupinfo = Loadable({
+  loader: () => import('./views/Group/Groupinfo'),
+  loading: Loading,
+});
+
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -148,6 +158,10 @@ const routes = [
   { path: '/course/lecture/:id', params: { id: '' }, name: 'Lectures', component: Lecture },
   { path: '/settings/sitesetting', exact: true, name: 'Site Setting', component: Sitesetting },
   { path: '/settings/subspackage', exact: true, name: 'Subscription Package', component: Subspackage },
+
+  { path: '/groups', exact: true, name: 'Group', component: Grouplist },
+  { path: '/groupinfo/:id', name: 'Group Info', component: Groupinfo },
+  { path: '/cms/contactus', name: 'Contact Us', component: Contactus },
 
   //{ path: '/settings', name: 'Account Settings', component: Settings },
 

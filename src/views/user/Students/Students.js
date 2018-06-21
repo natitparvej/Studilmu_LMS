@@ -11,7 +11,7 @@ class Students extends Component {
     var lognUser =  authService.getUser();
     this.state = {lognUser: lognUser , fullname: '', usertype : 'S',email: '', parentid : '', subparentid : '', isactive : '',
                   password : '', repassword : '', ownerid : '', instructorid : '', ownerrows : [], instructorows : [],
-                  visible: false, msg : '', rows: []};
+                  visible: false, msg : '', rows: [],};
 
 
     this.handleChange = this.handleChange.bind(this);
@@ -21,6 +21,7 @@ class Students extends Component {
     this.handleinstrotrChange = this.handleinstrotrChange.bind(this);
     this.filteruser = this.filteruser.bind(this);
     this.getstudent = this.getstudent.bind(this);
+    this.handleEdit = this.handleEdit.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
     this.handleDeleteClick = this.handleDeleteClick.bind(this);
     this.getstudent();
@@ -136,6 +137,7 @@ class Students extends Component {
           this.showalert('Email Already Existed');
         }
       });
+    this.setState({isEdittogged: 2, fullname: '', id : '', usertype : '', email: '', isactive : '', exispassword : '', bio: '' });
   }
 
   showalert(msgtxt) {
@@ -156,17 +158,24 @@ class Students extends Component {
         console.log(response);
         if(response.ack){
           this.getstudent();
-          this.setState({isEdittogged: false, fullname: '', id : '',
+          this.setState({isEdittogged: 2, fullname: '', id : '',
                         usertype : '', email: '', isactive : '',
                         exispassword : '', bio: '' });
         }
       });
 
     }else{
-      this.setState({isEdittogged: true,fullname: data.name, id : data.id,
+      this.setState({isEdittogged: 1,fullname: data.name, id : data.id,
                     usertype : data.user_type,email: data.email, isactive : data.is_active,
                     exispassword : data.password, bio: data.userbio });
     }
+  }
+
+
+  handleEdit(data){
+    this.setState({isEdittogged: 0, fullname: '', id : '',
+                        usertype : 'S', email: '', isactive : '',
+                        exispassword : '', bio: '' });
   }
 
   handleDeleteClick(id){
@@ -182,10 +191,10 @@ class Students extends Component {
 
   render() {
 
-    const userlistdiv = this.state.isEdittogged ? (
+    const userlistdiv = this.state.isEdittogged == 1 ? (
       <Card>
         <CardHeader>
-          <strong>Edit Category</strong>
+          <strong>Edit Student</strong>
         </CardHeader>
         <CardBody>
 
@@ -245,17 +254,116 @@ class Students extends Component {
               </Col>
             </FormGroup>
 
-          
-
           </Form>
 
         </CardBody>
         <CardFooter>
-          <Button type="submit" size="sm" color="primary" onClick={this.handleEditClick}><i className="fa fa-dot-circle-o"></i> Update</Button>
+          <Button type="submit" size="sm" color="primary" onClick={this.handleEditClick}><i className="fa fa-dot-circle-o"></i> Update</Button>&nbsp;
+          <Button type="submit" size="sm" color="primary" onClick={() => this.setState({isEdittogged : 2})}>Cancel</Button>
         </CardFooter>
       </Card>
     ):(
-      <Row>
+      this.state.isEdittogged == 0 ? (
+        <Card>
+        <CardHeader>
+          <strong>Add Student</strong>
+        </CardHeader>
+        <CardBody>
+
+          <Form action="" method="post" encType="multipart/form-data" className="form-horizontal" >
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Full Name</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="fullname" value={this.state.fullname} onChange={this.handleChange} id="text-input" placeholder="e.g. 'User Full Name'" />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Email Address</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="email" value={this.state.email} onChange={this.handleChange} id="text-input" placeholder="e.g. 'User Email Address'" />
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="text-input">Password</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="text" name="newpassword" value={this.state.newpassword} onChange={this.handleChange} id="text-input" placeholder="Blank to leave unchanged" />
+              </Col>
+            </FormGroup>
+
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="select">Select Owner</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="select" id="parentid" name="parentid" onChange={this.handleownerChange} value={this.state.parentid}>
+                  <option value='' disabled>Please Select</option>
+                  {this.state.ownerrows.map((row, i) =>
+                <option value={row.id} key={i}>{row.name}</option>
+                )}
+                </Input>
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="select">Select Instructor</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="select" id="subparentid" name="subparentid" onChange={this.handleChange} value={this.state.subparentid}>
+                  <option value='' disabled>Please Select</option>
+                  {this.state.instructorows.map((row, i) =>
+                  <option value={row.id} key={i}>{row.name}</option>
+                  )}
+                </Input>
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="select">User Role</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="select" id="usertype" name="usertype" onChange={this.handleChange} value={this.state.usertype}>
+                  <option value='' disabled>Please Select</option>
+                  <option value='C'>Owner</option>
+                  <option value='I'>Instructor</option>
+                  <option value='S'>Student</option>
+                </Input>
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Col md="3">
+                <Label htmlFor="select">Status</Label>
+              </Col>
+              <Col xs="12" md="9">
+                <Input type="select" id="isactive" name="isactive" onChange={this.handleChange} value={this.state.isactive}>
+                  <option value='' disabled>Please Select</option>
+                  <option value='1'>Active</option>
+                  <option value='0'>Inactive</option>
+                </Input>
+              </Col>
+            </FormGroup>
+          </Form>
+
+        </CardBody>
+        <CardFooter>
+          <Button type="submit" size="sm" color="primary" onClick={this.handleSubmit}><i className="fa fa-dot-circle-o"></i> Add</Button>&nbsp;
+          <Button type="submit" size="sm" color="primary" onClick={() => this.setState({isEdittogged : 2})}>Cancel</Button>
+        </CardFooter>
+      </Card>
+      ):(
+        <Row>
           <Col xs="12" md="12">
             <Card>
               <CardHeader>
@@ -285,7 +393,7 @@ class Students extends Component {
 
                 <Col xs="12" md="2">
                   <div className="card-header-actions">
-                    <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.toggleSuccess}>Add Students</button>
+                    <button aria-pressed="true" className="btn btn-success btn-block active" onClick={this.handleEdit}>Add Students</button>
                   </div>
                 </Col>
                 </FormGroup>
@@ -319,97 +427,21 @@ class Students extends Component {
                       <Badge color="danger">Inactive</Badge>
                     )}
                     </td>
-
                     <td>
-                      <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>
+                      <Button color="primary" size="sm" onClick={() => this.handleEditClick(row)}><i className="fa fa-pencil"></i></Button>&nbsp;
                       <Button color="danger" size="sm" onClick={() => { if (window.confirm('Are you sure you wish to delete this item?')) this.handleDeleteClick(row.id) } }><i className="fa fa-trash-o"></i></Button>
                     </td>
-                    
                   </tr>
-
                   )}
-
                   </tbody>
                 </Table>
-                <Modal isOpen={this.state.success} toggle={this.toggleSuccess}
-                       className={'modal-success ' + this.props.className}>
-                  
-                  <ModalHeader toggle={this.toggleSuccess}>Add Students</ModalHeader>
-                  <form onSubmit={this.handleSubmit}>
-                      <ModalBody>
-
-                          
-                          <Alert color="danger" isOpen={this.state.visible}>{this.state.msg}</Alert>
-
-                          <p className="text-muted">If no password is given, students will receive an email to confirm their account and set a password.</p>
-
-                          <InputGroup className="mb-3">
-                            <Input type="select" name="parentid" onChange={this.handleownerChange} value={this.state.parentid}>
-                              <option value='' >Please Select Owner</option>
-                              {this.state.ownerrows.map((row, i) =>
-                              <option value={row.id} key={i}>{row.name}</option>
-                              )}
-                            </Input>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <Input type="select" name="subparentid" onChange={this.handleChange} value={this.state.subparentid}>
-                              <option value='' >Please Select Instructor</option>
-                              {this.state.instructorows.map((row, i) =>
-                              <option value={row.id} key={i}>{row.name}</option>
-                              )}
-                            </Input>
-                          </InputGroup>
-                          
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="icon-user"></i>
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Full Name" name="fullname" value={this.state.fullname} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>@</InputGroupText>
-                            </InputGroupAddon>
-                            <Input type="text" placeholder="Email" name="email" value={this.state.email} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                          <InputGroup className="mb-3">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="icon-lock"></i>
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input type="password" placeholder="Password (optional)" name="password" value={this.state.password} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                          <InputGroup className="mb-4">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <i className="icon-lock"></i>
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input type="password" placeholder="Repeat password (optional)" name="repassword" value={this.state.repassword} onChange={this.handleChange}/>
-                          </InputGroup>
-
-                      
-                      </ModalBody>
-                      <ModalFooter>
-                        <Button color="success" type="submit">Add</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleSuccess}>Cancel</Button>
-                      </ModalFooter>
-                  </form>
-
-                </Modal>
                 </CardBody>
               
             </Card>
           </Col>
           
         </Row>
+      )
     )
     return (
       <div className="animated fadeIn">

@@ -127,14 +127,18 @@ export default {
       ],
     },
 
-
-
-
     {
       name: 'CMS',
       url: '/buttons',
       icon: 'icon-list',
       url: '/cms/aboutus',
+    },
+
+    {
+      name: 'Group',
+      url: '/buttons',
+      icon: 'icon-list',
+      url: '/groups',
     },
 
 
