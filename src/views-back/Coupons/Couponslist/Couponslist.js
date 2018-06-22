@@ -12,12 +12,18 @@ import { Button, Card, CardHeader, Form, FormGroup, FormText, Label, CardBody, C
 import classnames from 'classnames';
 import authService from '../../Service/authService.js';
 import Service from './../couponlistService.js';
+function disablePrevDates(startDate) {
+  const startSeconds = Date.parse(startDate);
+  return (date) => {
+    return Date.parse(date) < startSeconds;
+  }
+}
 class Couponslist extends Component {
   constructor(props) {
     super(props);
     var lognUser =  authService.getUser();
     this.state = {name: '', visible: false, msg : '', ownerrows : [], rows: [],
-                  isEdittogged : 2,name: '', id : '', code : '',percentage : '', endDate :moment(),startDate: moment(),status:'',minendDate:new Date(Date.now())
+                  isEdittogged : 2,name: '', id : '', code : '',percentage : '', endDate :moment(),startDate: moment(),status:'',
                   };
     this.handleChange = this.handleChange.bind(this);
     this.handleEditClick = this.handleEditClick.bind(this);
@@ -27,7 +33,6 @@ class Couponslist extends Component {
     this.toggleSuccess = this.toggleSuccess.bind(this);
     this.notification = this.notification.bind(this);
     this.handledateChange = this.handledateChange.bind(this);
-    this.handledateendChange = this.handledateendChange.bind(this);
     this.notification();
   }
   
@@ -47,15 +52,9 @@ class Couponslist extends Component {
   }
 
   handledateChange(date){
-  	console.log(date);
     this.setState({ startDate: date });
-    //this.setState({ endDate: date });
-    this.setState({ minendDate:date});
   }
 
-handledateendChange(date){
-    this.setState({endDate:date});
-  }
   showalert(msgtxt) {
     setTimeout(function() { 
       this.setState({ visible: false, msg : '' });
@@ -142,7 +141,7 @@ const minDate = new Date(Date.now());
                 <Label htmlFor="text-input">Start Date</Label>
               </Col>
               <Col xs="12" md="5">
-                <DatePicker selected={this.state.startDate} minDate={minDate} id="startDate" name="startDate" onChange={this.handledateChange} />
+                <DatePicker selected={this.state.startDate} minDate={minDate} id="startDate"  onChange={this.handledateChange} />
               </Col>
             </FormGroup>
              <FormGroup row>
@@ -150,7 +149,7 @@ const minDate = new Date(Date.now());
                 <Label htmlFor="text-input">End Date</Label>
               </Col>
               <Col xs="12" md="5">
-                <DatePicker selected={this.state.endDate} minDate={this.state.minendDate} id="endDate" name="endDate" onChange={this.handledateendChange} />
+                <DatePicker selected={this.state.endDate} minDate={minDate} id="endDate" onChange={this.handledateChange} />
               </Col>
             </FormGroup>
             <FormGroup row>
@@ -208,7 +207,7 @@ const minDate = new Date(Date.now());
                 <Label htmlFor="text-input">Start Date</Label>
               </Col>
               <Col xs="12" md="5">
-                <DatePicker selected={this.state.startDate} id="startDate" name="startDate" minDate={minDate} onChange={this.handledateChange} />
+                <DatePicker selected={this.state.startDate} id="startDate" minDate={minDate} onChange={this.handledateChange} />
               </Col>
             </FormGroup>
           <FormGroup row>
@@ -216,7 +215,7 @@ const minDate = new Date(Date.now());
                 <Label htmlFor="text-input">End Date</Label>
               </Col>
               <Col xs="12" md="5">
-                <DatePicker selected={this.state.endDate} id="endDate" name="endDate" minDate={this.state.minendDate} onChange={this.handledateendChange} />
+                <DatePicker selected={this.state.endDate} id="endDate" minDate={minDate} onChange={this.handledateChange} />
               </Col>
             </FormGroup>
             <FormGroup row>
